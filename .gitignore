@@ -1,0 +1,7 @@
+node_modules
+npm-debug.log
+Thumbs.db
+to-sync
+.tmp
+demo/cordova/plugins/*
+demo/cordova/platforms/*

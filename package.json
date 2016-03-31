@@ -1,0 +1,22 @@
+{
+    "name": "october",
+    "version": "0.0.1",
+    "description": "Flux graph based implementation.",
+
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "devDependencies" : {
+        "expect": "^1.8.0",
+        "mocha" : "2.4"
+    },
+
+    "main": "dist/player-bundle.js",
+
+    "scripts": {
+        "test": "env NODE_ENV=\"test\" mocha --compilers js:babel-register --recursive  --timeout 200 --bail test",
+        "test:watch": "npm test -- --watch"
+    }
+}
