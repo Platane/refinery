@@ -14,6 +14,7 @@ const fragA = ( action, previousState ) => {
 
     return newState
 }
+fragA.actions = [ 'actionName' ]
 
 // this is a derivated fragment,
 // it react to fragment change
@@ -23,14 +24,8 @@ const fragB = ( fragAValue, previousState, previousFragAValue ) => {
 
     return newState
 }
+fragB.dependencies = [ fragA ]
 
-const register1 = ( register ) => ({
-
-    fragAName : register( fragA, [ 'actionName' ] ),
-
-    fragBName : register( fragB, [ fragA ] ),
-
-})
 ```
 
 file2.js
@@ -46,30 +41,31 @@ const fragC = ( action, fragBValue, previousState, previousFragBValue ) => {
 
     return newState
 }
-
-const register2 = ( register ) => ({
-
-    fragCName : register( fragC, [ 'actionName' ], [ fragB ] ),
-
-})
+fragC.actions = [ 'actionName' ]
+fragC.dependencies = [ fragB ]
 ```
 
+file3.js
+```javascript
+import {fragB}  from './file1'
+import {fragC}  from './file1'
+
+// compose fragments
+// composing fragments like so will help to have a nice nested structure
+// which is not requried at all, expect for cosmetic aspect
+export const name = {
+    fragB,
+    fragC
+}
+```
 
 fileMain.js
 ```javascript
 import createGraph              from 'october'
-import {register as register1}  from './file1'
-import {register as register2}  from './file2'
+import * as fragments           from './file3'
 
-// compose fragments
-// composing fragments like so will help to have a nice nested structure
-// which is not useful at all, expect for cosmetic aspect
-const registerM = ( register ) => ({
-    name1 : register1( register ),
-    name2 : register2( register ),
-})
 
-const g = createGraph( registerM )
+const g = createGraph( fragments )
 
 // register a leaf
 const doSomething = ( fragCValue ) =>

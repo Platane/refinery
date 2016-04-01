@@ -1,39 +1,160 @@
+import sort from './sort'
 
 
-const extractFrags = register => {
+const sort_by_actions = fragments => {
 
+    // build the list of fragments which can change by action
+    const by_actions = {}
+    fragments.forEach( frag =>
 
-    // push all the frags into this array
-    const frags = []
-    const registerFn = ( fn, ...rest ) => {
+        frag.actions.forEach( actionName =>
 
-        const actions       = ( rest[0] && typeof rest[0][0] == 'string' && rest[0] ) || ( rest[1] && typeof rest[1][0] == 'string' && rest[1] ) || []
-        const dependencies  = ( rest[0] && typeof rest[0][0] == 'function' && rest[0] ) || ( rest[1] && typeof rest[1][0] == 'function' && rest[1] ) || []
+            ( by_actions[ actionName ] = by_actions[ actionName ] || [] ).push( frag )
 
-        frags.push({ fn, actions, dependencies })
+        )
+    )
 
-        return fn
+    // and special case for the init actions
+    by_actions[ '@@init' ] = []
+    fragments.forEach( frag =>
+
+        frag.actions.length
+            && by_actions[ '@@init' ].push( frag )
+
+    )
+
+    return sort_by_actions
+}
+
+const set_next = fragments =>
+    fragments.forEach( A =>
+        ( A.dependencies || [] )
+            .forEach( B => B.next.push( A )  )
+    )
+
+const createDispatch = ( fragments, by_actions, state ) => {
+
+    state.current = state.current || {}
+
+    return ( action ) => {
+
+        const previousState = state.current
+        const newState = { ...previousState }
+
+        let frags = by_actions[ action.type ] || []
+        let leafs = new Set
+
+        while( frags.length ) {
+
+            // grab the first one ( the one with lower index )
+            const f = frags.unshift()
+
+            // prepare params
+            const depValues     = f.dependencies
+                .map( frag => newState[ frag.literalPath ] )
+
+            const previousDepValues  = f.dependencies
+                .map( frag => previousState[ frag.literalPath ] )
+
+            const previousValue = previousState[ f.literalPath ]
+
+            // call the function
+            const value = f.actions.length
+                ? f( action, ...depValues, previousValue, ...previousDepValues )
+                : f( ...depValues, previousValue, ...previousDepValues )
+
+            // check if the value have changed
+            if ( value == previousValue )
+                continue
+
+            // the value have changed,
+            // should notify the leafs
+            f.leafs
+                .forEach( l => leafs.add( l ) )
+
+            // and propage the change
+            frags.push( ...f.next.filter( x => frags.indexOf( x ) == -1 ) )
+            frags.sort( (a, b) => a.index < b.index ? 1 : -1 )
+        }
+
+        // notify the leafs
+        leafs
+            .forEach( l =>
+
+                l( ...l.dependencies.map( frag => newState[ frag.literalPath ] ) )
+
+            )
+
+        // loop
+        state.current = newState
+    }
+}
+
+export const create = fragmentTree => {
+
+    // flatten the fragments into a Set
+    const fragments = new Set
+
+    const traverse = ( tree, path=[] ) => {
+
+        if ( typeof tree == 'function' ) {
+
+            // add attributes
+
+            tree.literalPath    = path.join('.')
+            tree.path           = path
+
+            // the leafs which listen to change on this fragment
+            tree.leafs          = new Set
+
+            // the next fragments ( = fragments for which this is a dependancy )
+            tree.next           = []
+
+            // as the fragment can be sorted by resolution priority, the index in this list
+            tree.index          = null
+
+            tree.actions        = tree.actions || []
+            tree.dependencies   = tree.dependencies || []
+
+            fragments.add( tree )
+
+        } else
+            Object.keys( tree )
+                .forEach( name => traverse( tree[name],  [...path, name ] ) )
     }
 
-    const tree = register( registerFn )
+    traverse( fragmentTree )
 
-    // name all the frags
-    const traverse = ( tree, path=[] ) =>
-        typeof tree == 'function'
-            ? frags.find( x => x.fn == tree ).path = path
-            : Object.keys( tree ).forEach( name => traverse( tree[ name ], [ ...path, name ] ) )
+    // attribute the next field
+    set_next( fragments )
 
-    traverse( tree )
+    // attribute the index field
+    sort( fragments )
 
-    return frags
+    // sort by actions
+    const by_actions = sort_by_actions( fragments )
+
+    const state = {}
+
+
+
+    // methods
+    const register = ( ...args ) => {
+        const fn = args.pop()
+        fn.dependencies = args
+        args.forEach( frag => frag.leafs.push( fn ) )
+    }
+    const unregister = fn =>
+        fragments.forEach( frag => frag.leafs.remove( fn ) )
+    const getState = () =>
+        state.current
+
+
+    return {
+        getState,
+        register,
+        unregister,
+        fragments,
+        dispatch: createDispatch( fragments, by_actions, state )
+    }
 }
-
-
-export const createGraph = ( register ) => {
-
-    const frags = extractFrags( register )
-
-
-}
-
-export const _test = { extractFrags }

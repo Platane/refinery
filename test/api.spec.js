@@ -6,7 +6,7 @@ describe('API', () => {
 
     it('methods', () =>{
 
-        expect( exposure.createGraph ).toExist()
+        expect( exposure.create ).toExist()
 
     })
 
