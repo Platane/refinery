@@ -11,5 +11,6 @@
     "ignore": [
         "node_modules/**/*.js",
         "dist/**/*.js"
-    ]
+    ],
+    "sourceMaps": false
 }
