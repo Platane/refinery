@@ -1,7 +1,7 @@
 # october
 
 
-[![Build Status](https://travis-ci.com/Platane/october.svg?token=px2fv1ku9DDooAdUmywe&branch=master)](https://magnum.travis-ci.com/Platane/october)
+[![Build Status](https://travis-ci.org/Platane/october.svg?branch=master)](https://travis-ci.org/Platane/october)
 
 Flux graph based implementation
 
