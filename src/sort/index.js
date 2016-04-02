@@ -19,11 +19,10 @@ module.exports = ( fragmentSet ) => {
     fragmentSet.forEach( key => i_by_fragment.set( key, i ++ ) )
 
     // fill the graph
-    fragmentSet.forEach( (frag, i) =>
-
-        frag.dependencies
-            .forEach( f => graph[ i_by_fragment.get( f ) ].push( i )  )
-
+    fragmentSet.forEach( B =>
+        B.dependencies.forEach( A =>
+            graph[ i_by_fragment.get( A ) ].push( i_by_fragment.get( B ) )
+        )
     )
 
     // sort the graph
