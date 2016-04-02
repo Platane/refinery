@@ -1,4 +1,5 @@
-import sort from './sort'
+import sort                 from './sort'
+import {createDispatcher}   from './dispatcher'
 
 
 const sort_by_actions = fragments => {
@@ -31,66 +32,6 @@ const set_next = fragments =>
         ( A.dependencies || [] )
             .forEach( B => B.next.push( A )  )
     )
-
-const createDispatch = ( fragments, by_actions, state ) => {
-
-    state.current = state.current || {}
-
-    return ( action ) => {
-
-        const previousState = state.current
-        const newState = { ...previousState }
-
-        let frags = by_actions[ action.type ] || []
-        let leafs = new Set
-
-        while( frags.length ) {
-
-            // grab the first one ( the one with lower index )
-            const f = frags.shift()
-
-            // prepare params
-            const depValues     = f.dependencies
-                .map( frag => newState[ frag.literalPath ] )
-
-            const previousDepValues  = f.dependencies
-                .map( frag => previousState[ frag.literalPath ] )
-
-            const previousValue = previousState[ f.literalPath ]
-
-            // call the function
-            const value = f.actions.length
-                ? f( action, ...depValues, previousValue, ...previousDepValues )
-                : f( ...depValues, previousValue, ...previousDepValues )
-
-            // check if the value have changed
-            if ( value == previousValue )
-                continue
-
-            newState[ f.literalPath ] = value
-
-            // the value have changed,
-            // should notify the leafs
-            f.leafs
-                .forEach( l => leafs.add( l ) )
-
-            // and propage the change
-            frags.push( ...f.next.filter( x => frags.indexOf( x ) == -1 ) )
-            frags.sort( (a, b) => a.index < b.index ? 1 : -1 )
-        }
-
-        // notify the leafs
-        leafs
-            .forEach( l =>
-
-                l( ...l.dependencies.map( frag => newState[ frag.literalPath ] ) )
-
-            )
-
-        // loop
-        state.current = newState
-    }
-}
 
 export const create = fragmentTree => {
 
@@ -133,6 +74,11 @@ export const create = fragmentTree => {
     // attribute the index field
     sort( fragments )
 
+    // sort the next array in each fragment
+    fragments.forEach( frag => frag.next = frag.next.sort( (a,b) => a.index > b.index ? 1 : -1 ) )
+
+
+
     // sort by actions
     const by_actions = sort_by_actions( fragments )
 
@@ -153,10 +99,11 @@ export const create = fragmentTree => {
 
 
     return {
-        getState,
         register,
         unregister,
+        dispatch: createDispatcher( fragments, by_actions, state ),
+
+        getState,
         fragments,
-        dispatch: createDispatch( fragments, by_actions, state )
     }
 }
