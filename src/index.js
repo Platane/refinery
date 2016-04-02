@@ -23,7 +23,7 @@ const sort_by_actions = fragments => {
 
     )
 
-    return sort_by_actions
+    return by_actions
 }
 
 const set_next = fragments =>
@@ -47,7 +47,7 @@ const createDispatch = ( fragments, by_actions, state ) => {
         while( frags.length ) {
 
             // grab the first one ( the one with lower index )
-            const f = frags.unshift()
+            const f = frags.shift()
 
             // prepare params
             const depValues     = f.dependencies
