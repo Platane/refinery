@@ -67,6 +67,8 @@ const createDispatch = ( fragments, by_actions, state ) => {
             if ( value == previousValue )
                 continue
 
+            newState[ f.literalPath ] = value
+
             // the value have changed,
             // should notify the leafs
             f.leafs
@@ -142,10 +144,10 @@ export const create = fragmentTree => {
     const register = ( ...args ) => {
         const fn = args.pop()
         fn.dependencies = args
-        args.forEach( frag => frag.leafs.push( fn ) )
+        args.forEach( frag => frag.leafs.add( fn ) )
     }
     const unregister = fn =>
-        fragments.forEach( frag => frag.leafs.remove( fn ) )
+        fragments.forEach( frag => frag.leafs.delete( fn ) )
     const getState = () =>
         state.current
 
