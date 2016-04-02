@@ -1,5 +1,8 @@
 # october
 
+
+[![Build Status](https://travis-ci.com/Platane/october.svg?token=px2fv1ku9DDooAdUmywe&branch=master)](https://magnum.travis-ci.com/Platane/october)
+
 Flux graph based implementation
 
 # spec
