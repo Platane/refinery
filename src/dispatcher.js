@@ -36,7 +36,7 @@ export const createDispatcher = ( fragments, by_actions, state ) => {
         const previousState = state.current
         const newState = { ...previousState }
 
-        let frags = by_actions[ action.type ] || []
+        let frags = ( by_actions[ action.type ] || [] ).slice()
         let leafs = new Set
 
         while( frags.length ) {
