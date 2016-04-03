@@ -29,7 +29,7 @@
         "babel-plugin-transform-export-extensions": "6.x"
     },
 
-    "main": "dist/october.js",
+    "main": "dist/index.js",
 
     "scripts": {
         "build": "babel --out-dir ./dist ./src",
