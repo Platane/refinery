@@ -3,8 +3,6 @@
     "version": "0.1.0",
     "description": "Flux graph based implementation.",
 
-    "private": true,
-
     "dependencies": {
     },
 
@@ -31,7 +29,7 @@
         "babel-plugin-transform-export-extensions": "6.x"
     },
 
-    "main": "dist/player-bundle.js",
+    "main": "src/index.js",
 
     "scripts": {
         "build": "babel --out-dir ./dist ./src",
