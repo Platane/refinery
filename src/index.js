@@ -88,6 +88,8 @@ export const create = fragmentTree => {
 
     // sort by actions
     const by_actions = fragmentByAction( fragmentList )
+    Object.keys( by_actions )
+        .forEach( actionType => by_actions[ actionType ] = by_actions[ actionType ].sort((a,b) => fragmentList[a].index > fragmentList[b].index ? 1 : -1) )
 
     const state = {}
 
