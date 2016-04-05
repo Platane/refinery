@@ -44,11 +44,11 @@ const sortIdArr = ( storage, arr ) => {
     return arr.sort( (a_id, b_id) => by_id[ a_id ].index > by_id[ b_id ].index ? 1 : -1 )
 }
 
-const callFragment = ( fragment, action, getValue, getPreviousValue ) =>
+const callFragment = ( fragment, action, state, getValue, getPreviousValue ) =>
     fragment.fn(
         ...( fragment.actions.length ? [action] : [] ),
-        ...fragment.dependencies.map( id => getValue( id ) ),
-        getPreviousValue( fragment.id ),
+        ...fragment.dependencies.map( id => state[ id ] ),
+        state[ fragment.id ],
         getValue,
         getPreviousValue
     )
@@ -65,7 +65,7 @@ const initValues = ( storage, initState ) => {
         .forEach( x =>
             state[ x.id ] = 'defaultValue' in x.definition
                 ? x.definition.defaultValue
-                : callFragment( x, initAction, id => state[id], () => null )
+                : callFragment( x, initAction, state, key => state[ storage.getId(key) ], () => null )
         )
 
     return state
@@ -99,7 +99,7 @@ export const createDispatch = ( storage, state ) => {
             const c = mayChange.shift()
 
             // call the function
-            const value = callFragment( c, action, getValue, getPreviousValue )
+            const value = callFragment( c, action, state.current, getValue, getPreviousValue )
 
             // check if the value have changed
             if ( value == previousState[c.id] )
