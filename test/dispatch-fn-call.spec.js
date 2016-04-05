@@ -17,6 +17,9 @@ describe('dispatch', () => {
 
             const x = create( {A} )
 
+            // reset var because funtion may have been called for init
+            called = false
+
             x.dispatch({type:'z'})
 
             expect( called ).toExist()
@@ -24,19 +27,21 @@ describe('dispatch', () => {
 
         it('two frags, different actions', () =>{
 
-            let calls = []
+            const calls = []
 
             const A = ( ) => {
                 calls.push('A')
                 return 'A'
             }
             A.actions = [ 'z' ]
+            A.defaultValue = null
 
             const B = ( ) => {
                 calls.push('B')
                 return 'B'
             }
             B.actions = [ 'y' ]
+            B.defaultValue = null
 
             const x = create( {A,B} )
 
@@ -47,19 +52,21 @@ describe('dispatch', () => {
 
         it('two dependant frags, first one change', () =>{
 
-            let calls = []
+            const calls = []
 
             const A = ( ) => {
                 calls.push('A')
                 return 'A'
             }
             A.actions = [ 'z' ]
+            A.defaultValue = null
 
             const B = ( ) => {
                 calls.push('B')
                 return 'B'
             }
             B.dependencies = [ A ]
+            B.defaultValue = null
 
             const x = create( {A,B} )
 
@@ -70,19 +77,21 @@ describe('dispatch', () => {
 
         it('two dependant frags, first one does not change', () =>{
 
-            let calls = []
+            const calls = []
 
             const A = ( action, previousValue ) => {
                 calls.push('A')
                 return previousValue
             }
             A.actions = [ 'z' ]
+            A.defaultValue = null
 
             const B = ( ) => {
                 calls.push('B')
                 return 'B'
             }
             B.dependencies = [ A ]
+            B.defaultValue = null
 
             const x = create( {A,B} )
 
@@ -93,7 +102,7 @@ describe('dispatch', () => {
 
         it('complex', () =>{
 
-            let calls = []
+            const calls = []
 
             const A = ( ) => calls.push('A')
             const B = ( ) => calls.push('B')
@@ -119,6 +128,18 @@ describe('dispatch', () => {
             J.label = 'J'
             K.label = 'K'
 
+            A.defaultValue = 'init'
+            B.defaultValue = 'init'
+            C.defaultValue = 'init'
+            D.defaultValue = 'init'
+            E.defaultValue = 'init'
+            F.defaultValue = 'init'
+            G.defaultValue = 'init'
+            H.defaultValue = 'init'
+            I.defaultValue = 'init'
+            J.defaultValue = 'init'
+            K.defaultValue = 'init'
+
             A.actions = [ 'z' ]
             B.actions = [ 'z' ]
             C.dependencies = [ A ]
@@ -129,6 +150,7 @@ describe('dispatch', () => {
             H.dependencies = [ G ]
             I.dependencies = [ F, E ]
             J.dependencies = [ I, A ]
+            J.actions = [ 'z' ]
             K.dependencies = [ G, E, B ]
 
 
@@ -152,6 +174,9 @@ describe('dispatch', () => {
                     D
                 }
             })
+
+            // reset array because funtion may have been called for init
+            calls.length=0
 
             x.dispatch({type:'z'})
 

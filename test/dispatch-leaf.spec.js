@@ -6,12 +6,13 @@ describe('leaf', () => {
 
     describe('params', () => {
 
-        it('one frag with one leaf registred', () =>{
+        it('one fragment with one leaf registred', () =>{
 
             const A = ( action, previousValue ) =>
                 45
 
             A.actions = [ 'z' ]
+            A.defaultValue = 1
 
             const x = create( {A} )
             const fn = valueA =>
@@ -26,7 +27,7 @@ describe('leaf', () => {
 
     describe('register', () => {
 
-        it('one frag with one leaf registred', () =>{
+        it('one fragment with one leaf registred', () =>{
 
             let called = false
 
@@ -34,6 +35,7 @@ describe('leaf', () => {
                 45
 
             A.actions = [ 'z' ]
+            A.defaultValue = 1
 
             const x = create( {A} )
             const fn = valueA =>
@@ -47,7 +49,7 @@ describe('leaf', () => {
             expect( called ).toExist()
         })
 
-        it('one frag with one leaf registred, fragment does not change', () =>{
+        it('one fragment with one leaf registred, fragment does not change', () =>{
 
             let called = false
 
@@ -70,7 +72,7 @@ describe('leaf', () => {
 
     describe('unregister', () => {
 
-        it('one frag with one leaf un-registred', () =>{
+        it('one fragment with one leaf un-registred', () =>{
 
             let called = false
 

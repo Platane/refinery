@@ -3,6 +3,7 @@ import {extract as extract_}    from './extract'
 
 export const createFragmentStorage = () => {
 
+    let sorted
     const by_id = {}
     const id_by_key = new Map
 
@@ -15,9 +16,16 @@ export const createFragmentStorage = () => {
         return x
     }
 
+    const list = () =>
+        Object.keys( by_id ).map( id => by_id[ id ] )
+
+    const sortedList = () =>
+        sorted = sorted || list().sort( (a,b) => a.index > b.index ? 1 : -1 )
+
     return {
         add,
-        list        : () => Object.keys( by_id ).map( id => by_id[ id ] ),
+        list,
+        sortedList,
         by_id       : () => by_id,
         getId       : key => id_by_key.get( key ),
     }

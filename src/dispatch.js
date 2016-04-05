@@ -29,15 +29,10 @@ const mergePendingFrags = ( a, b ) => {
 
 const sortByAction = ( storage ) => {
 
-    const by_id = storage.by_id()
-
     const by_actions = {}
-    sortIdArr( storage, Object.keys(by_id) ).forEach( id =>
-
-        by_id[ id ].actions.forEach( actionType =>
-
-            ( by_actions[ actionType ] = by_actions[ actionType ] || [] ).push( id )
-
+    storage.sortedList().forEach( x =>
+        x.actions.forEach( actionType =>
+            ( by_actions[ actionType ] = by_actions[ actionType ] || [] ).push( x.id )
         )
     )
 
@@ -49,6 +44,33 @@ const sortIdArr = ( storage, arr ) => {
     return arr.sort( (a_id, b_id) => by_id[ a_id ].index > by_id[ b_id ].index ? 1 : -1 )
 }
 
+const callFragment = ( fragment, action, getValue, getPreviousValue ) =>
+    fragment.fn(
+        ...( fragment.actions.length ? [action] : [] ),
+        ...fragment.dependencies.map( id => getValue( id ) ),
+        getPreviousValue( fragment.id ),
+        getValue,
+        getPreviousValue
+    )
+
+
+const initValues = ( storage, initState ) => {
+
+    const state = initState || {}
+    const initAction = {type:'@@init'}
+
+    // init all the values with actions
+    storage.sortedList()
+        .filter( ({id}) => !(id in state ) )
+        .forEach( x =>
+            state[ x.id ] = 'defaultValue' in x.definition
+                ? x.definition.defaultValue
+                : callFragment( x, initAction, id => state[id], () => null )
+        )
+
+    return state
+}
+
 export const createDispatch = ( storage, state ) => {
 
     const by_actions = sortByAction( storage )
@@ -57,7 +79,7 @@ export const createDispatch = ( storage, state ) => {
     // sort all the next array
     storage.list().forEach( x => x.next = sortIdArr( storage, x.next ) )
 
-    state.current = state.current || {}
+    state.current = initValues( storage, state.init )
 
     return ( action ) => {
 
@@ -76,27 +98,18 @@ export const createDispatch = ( storage, state ) => {
             // grab the first one ( the one with lower index )
             const c = mayChange.shift()
 
-
-            // prepare params
-            const depValues     = c.dependencies
-                .map( id => newState[ id ] )
-
-            const previousValue = previousState[ c.id ]
-
             // call the function
-            const value = c.actions.length
-                ? c.fn( action, ...depValues, previousValue, getValue, getPreviousValue )
-                : c.fn( ...depValues, previousValue, getValue, getPreviousValue )
+            const value = callFragment( c, action, getValue, getPreviousValue )
 
             // check if the value have changed
-            if ( value == previousValue )
+            if ( value == previousState[c.id] )
                 continue
 
             newState[ c.id ] = value
 
             // the value have changed,
             // should notify the leafs
-            leafs = [ ...leafs, ...c.leafs ]
+            leafs.push( ...c.leafs )
 
             // and propage the change
             mergePendingFrags( mayChange, c.next.map( i => by_id[i] ) )

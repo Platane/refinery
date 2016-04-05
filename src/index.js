@@ -18,9 +18,9 @@ export const create = fragmentTree => {
         dispatch: createDispatch( storage, state ),
         ...createRegister( storage ),
 
-        getValue: ( key ) => state.current[ storage.getId() ],
+        getValue: ( key ) => state.current[ storage.getId( key ) ],
 
-        list: () => storage.list(),
+        list: () => storage.sortedList(),
         by_id: () => storage.by_id(),
     }
 }
