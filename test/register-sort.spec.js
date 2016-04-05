@@ -15,8 +15,8 @@ describe('register', () => {
 
             const x = create( {A,B} )
 
-            expect( x.fragments().some( x => x.fn == A && x.index == 0 ) ).toBe( true )
-            expect( x.fragments().some( x => x.fn == B && x.index == 1 ) ).toBe( true )
+            expect( x.list().some( x => x.fn == A && x.index == 0 ) ).toBe( true )
+            expect( x.list().some( x => x.fn == B && x.index == 1 ) ).toBe( true )
         })
 
         it('two frags dependant ( opposite dependency )', () =>{
@@ -28,8 +28,8 @@ describe('register', () => {
 
             const x = create( {A,B} )
 
-            expect( x.fragments().some( x => x.fn == B && x.index == 0 ) ).toBe( true )
-            expect( x.fragments().some( x => x.fn == A && x.index == 1 ) ).toBe( true )
+            expect( x.list().some( x => x.fn == B && x.index == 0 ) ).toBe( true )
+            expect( x.list().some( x => x.fn == A && x.index == 1 ) ).toBe( true )
         })
 
     })

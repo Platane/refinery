@@ -17,6 +17,8 @@ describe('API', () => {
         expect( x.dispatch ).toExist()
         expect( x.register ).toExist()
         expect( x.unregister ).toExist()
+        expect( x.list ).toExist()
+        expect( x.getValue ).toExist()
 
     })
 

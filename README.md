@@ -5,6 +5,12 @@
 
 Flux graph based implementation
 
+# properties to declare on a fragment
+actions
+defaultValue
+dependencies
+path
+
 # spec
 
 file1.js
@@ -80,4 +86,5 @@ const action = {type:''}
 g.dispatch( action )
 
 
+g.values( fragB )
 ```

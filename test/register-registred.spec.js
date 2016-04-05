@@ -12,9 +12,9 @@ describe('register', () => {
 
             const x = create( A )
 
-            expect( x.fragments().length ).toBe( 1 )
-            expect( x.fragments()[0].fn ).toBe( A )
-            expect( x.fragments()[0].path.join('.') ).toBe( '' )
+            expect( x.list().length ).toBe( 1 )
+            expect( x.list()[0].fn ).toBe( A )
+            expect( x.list()[0].id ).toBe( '' )
         })
 
         it('one frag nested', () =>{
@@ -23,9 +23,9 @@ describe('register', () => {
 
             const x = create( {A} )
 
-            expect( x.fragments().length ).toBe( 1 )
-            expect( x.fragments()[0].fn ).toBe( A )
-            expect( x.fragments()[0].path.join('.') ).toBe( 'A' )
+            expect( x.list().length ).toBe( 1 )
+            expect( x.list()[0].fn ).toBe( A )
+            expect( x.list()[0].id ).toBe( 'A' )
         })
 
         it('two frags nested', () =>{
@@ -35,9 +35,9 @@ describe('register', () => {
 
             const x = create( {A,B} )
 
-            expect( x.fragments().length ).toBe( 2 )
-            expect( x.fragments().some( x => x.fn == A ) ).toBe( true )
-            expect( x.fragments().some( x => x.fn == B ) ).toBe( true )
+            expect( x.list().length ).toBe( 2 )
+            expect( x.list().some( x => x.fn == A ) ).toBe( true )
+            expect( x.list().some( x => x.fn == B ) ).toBe( true )
         })
 
         it('complex nesting', () =>{
@@ -47,9 +47,9 @@ describe('register', () => {
 
             const x = create( {A,U:{B}} )
 
-            expect( x.fragments().length ).toBe( 2 )
-            expect( x.fragments().some( x => x.fn == A && x.path.join('.') == 'A' ) ).toBe( true )
-            expect( x.fragments().some( x => x.fn == B && x.path.join('.') == 'U.B' ) ).toBe( true )
+            expect( x.list().length ).toBe( 2 )
+            expect( x.list().some( x => x.fn == A && x.id == 'A' ) ).toBe( true )
+            expect( x.list().some( x => x.fn == B && x.id == 'U.B' ) ).toBe( true )
         })
 
         it('hidden frag ( not in the fragment declaration, but listed as dependency )', () =>{
@@ -61,8 +61,8 @@ describe('register', () => {
 
             const x = create( {A} )
 
-            expect( x.fragments().length ).toBe( 2 )
-            expect( x.fragments().some( x => x.fn == B ) ).toBe( true )
+            expect( x.list().length ).toBe( 2 )
+            expect( x.list().some( x => x.fn == B ) ).toBe( true )
         })
     })
 })
