@@ -12,9 +12,9 @@ describe('register', () => {
 
             const x = create( A )
 
-            expect( x.fragments.size ).toBe( 1 )
-            expect( x.fragments.has( A ) ).toBe( true )
-            expect( A.path.join('.') ).toBe( '' )
+            expect( x.fragments().length ).toBe( 1 )
+            expect( x.fragments()[0].fn ).toBe( A )
+            expect( x.fragments()[0].path.join('.') ).toBe( '' )
         })
 
         it('one frag nested', () =>{
@@ -23,9 +23,9 @@ describe('register', () => {
 
             const x = create( {A} )
 
-            expect( x.fragments.size ).toBe( 1 )
-            expect( x.fragments.has( A ) ).toBe( true )
-            expect( A.path.join('.') ).toBe( 'A' )
+            expect( x.fragments().length ).toBe( 1 )
+            expect( x.fragments()[0].fn ).toBe( A )
+            expect( x.fragments()[0].path.join('.') ).toBe( 'A' )
         })
 
         it('two frags nested', () =>{
@@ -35,11 +35,9 @@ describe('register', () => {
 
             const x = create( {A,B} )
 
-            expect( x.fragments.size ).toBe( 2 )
-            expect( x.fragments.has( A ) ).toBe( true )
-            expect( x.fragments.has( B ) ).toBe( true )
-            expect( A.path.join('.') ).toBe( 'A' )
-            expect( B.path.join('.') ).toBe( 'B' )
+            expect( x.fragments().length ).toBe( 2 )
+            expect( x.fragments().some( x => x.fn == A ) ).toBe( true )
+            expect( x.fragments().some( x => x.fn == B ) ).toBe( true )
         })
 
         it('complex nesting', () =>{
@@ -49,12 +47,22 @@ describe('register', () => {
 
             const x = create( {A,U:{B}} )
 
-            expect( x.fragments.size ).toBe( 2 )
-            expect( x.fragments.has( A ) ).toBe( true )
-            expect( x.fragments.has( B ) ).toBe( true )
-            expect( A.path.join('.') ).toBe( 'A' )
-            expect( B.path.join('.') ).toBe( 'U.B' )
+            expect( x.fragments().length ).toBe( 2 )
+            expect( x.fragments().some( x => x.fn == A && x.path.join('.') == 'A' ) ).toBe( true )
+            expect( x.fragments().some( x => x.fn == B && x.path.join('.') == 'U.B' ) ).toBe( true )
+        })
+
+        it('hidden frag ( not in the fragment declaration, but listed as dependency )', () =>{
+
+            const A = () => null
+            const B = () => null
+
+            A.dependencies = [ B ]
+
+            const x = create( {A} )
+
+            expect( x.fragments().length ).toBe( 2 )
+            expect( x.fragments().some( x => x.fn == B ) ).toBe( true )
         })
     })
-
 })

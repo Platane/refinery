@@ -1,109 +1,119 @@
 import sort                 from './sort'
 import {createDispatcher}   from './dispatcher'
 
-
-const sort_by_actions = fragments => {
+const fragmentByAction = list => {
 
     // build the list of fragments which can change by action
     const by_actions = {}
-    fragments.forEach( frag =>
-
-        frag.actions.forEach( actionName =>
-
-            ( by_actions[ actionName ] = by_actions[ actionName ] || [] ).push( frag )
-
+    list.forEach( ({actions}, i) =>
+        actions.forEach( actionType =>
+            (by_actions[ actionType ] = by_actions[ actionType ] || []).push( i )
         )
-    )
-
-    // and special case for the init actions
-    by_actions[ '@@init' ] = []
-    fragments.forEach( frag =>
-
-        frag.actions.length
-            && by_actions[ '@@init' ].push( frag )
-
     )
 
     return by_actions
 }
 
-const set_next = fragments =>
-    fragments.forEach( A =>
-        ( A.dependencies || [] )
-            .forEach( B => B.next.push( A )  )
+const setDependencies = (list, map) =>
+    list.forEach( (A,ia) =>
+        ( A.key.dependencies || [] )
+            .forEach( bkey => {
+                const ib = map.get( bkey )
+                list[ ib ].next.push( ia )
+                A.dependencies.push( ib )
+            })
     )
+
+const parseFragment = (fn, path) =>
+    ({
+        fn,
+        path: path || 'anonym'+Math.random().toString(36).slice(2,8),
+        actions: fn.actions || [],
+        next: [],
+        dependencies: [],
+        key: fn,
+        leafs: [],
+    })
+
+const flattenFragments = (tree, path=[]) =>
+    typeof tree == 'object'
+        ? Object.keys(tree)
+            .reduce( (list, name) => [ ...list, ...flattenFragments(tree[name], [...path, name]) ] ,[] )
+        : [ parseFragment( tree, path ) ]
+
+const fragmentByKey = fragments =>
+    fragments
+        .reduce( (map, fragment, i) => map.set( fragment.key, i ), new Map )
+
+
+const extractAnonymFragments = list => {
+
+    const stack = list.map( x => x.key )
+
+    while (stack.length) {
+
+        const key = stack.shift()
+
+        ;(key.dependencies || [])
+            .forEach( key => {
+
+                if ( list.some( x => x.key == key ) )
+                    return
+
+                list.push( parseFragment( key ) )
+                stack.push( key )
+            })
+    }
+
+    return list
+}
 
 export const create = fragmentTree => {
 
-    // flatten the fragments into a Set
-    const fragments = new Set
+    // extract fragment from the fragment tree
+    const fragmentList = extractAnonymFragments( flattenFragments(fragmentTree) )
 
-    const traverse = ( tree, path=[] ) => {
-
-        if ( typeof tree == 'function' ) {
-
-            // add attributes
-
-            tree.literalPath    = path.join('.')
-            tree.path           = path
-
-            // the leafs which listen to change on this fragment
-            tree.leafs          = new Set
-
-            // the next fragments ( = fragments for which this is a dependancy )
-            tree.next           = []
-
-            // as the fragment can be sorted by resolution priority, the index in this list
-            tree.index          = null
-
-            tree.actions        = tree.actions || []
-            tree.dependencies   = tree.dependencies || []
-
-            fragments.add( tree )
-
-        } else
-            Object.keys( tree )
-                .forEach( name => traverse( tree[name],  [...path, name ] ) )
-    }
-
-    traverse( fragmentTree )
+    const index = fragmentByKey( fragmentList )
 
     // attribute the next field
-    set_next( fragments )
+    setDependencies( fragmentList, index )
 
     // attribute the index field
-    sort( fragments )
+    sort(fragmentList)
 
     // sort the next array in each fragment
-    fragments.forEach( frag => frag.next = frag.next.sort( (a,b) => a.index > b.index ? 1 : -1 ) )
-
+    fragmentList
+        .forEach( x => x.next = x.next.sort((a,b) => fragmentList[a].index > fragmentList[b].index ? 1 : -1))
 
 
     // sort by actions
-    const by_actions = sort_by_actions( fragments )
+    const by_actions = fragmentByAction( fragmentList )
 
     const state = {}
 
-
-
     // methods
-    const register = ( ...args ) => {
+    const register = (...args) => {
         const fn = args.pop()
-        fn.dependencies = args
-        args.forEach( frag => frag.leafs.add( fn ) )
+        fn.dependencies = args.map( key => index.get( key ) )
+        fn.dependencies.forEach( i => fragmentList[ i ].leafs.push(fn) )
     }
     const unregister = fn =>
-        fragments.forEach( frag => frag.leafs.delete( fn ) )
-    const getState = () =>
-        state.current
-
+        fragmentList.forEach( fragment => {
+            for(let i=fragment.leafs.length; i--;)
+                if(fragment.leafs[i] == fn)
+                    fragment.leafs.splice(i,1)
+        })
+    const value = key =>
+        state.current[ key ]
+    const fragments = () =>
+        fragmentList
 
     return {
         register,
         unregister,
-        dispatch: createDispatcher( fragments, by_actions, state ),
+        dispatch: createDispatcher(fragmentList, by_actions, state),
 
-        getState,
+        value,
         fragments,
     }
 }

@@ -107,6 +107,18 @@ describe('dispatch', () => {
             const J = ( ) => calls.push('J')
             const K = ( ) => calls.push('K')
 
+            A.label = 'A'
+            B.label = 'B'
+            C.label = 'C'
+            D.label = 'D'
+            E.label = 'E'
+            F.label = 'F'
+            G.label = 'G'
+            H.label = 'H'
+            I.label = 'I'
+            J.label = 'J'
+            K.label = 'K'
+
             A.actions = [ 'z' ]
             B.actions = [ 'z' ]
             C.dependencies = [ A ]
@@ -145,8 +157,8 @@ describe('dispatch', () => {
 
             const valid = [ A,B,C,D,E,F,G,H,I,J,K ]
                 .every( Y =>
-                    Y.dependencies.every( X =>
-                        calls.findIndex( l => l == X.path[ X.path.length-1 ] ) < calls.findIndex( l => l == Y.path[ Y.path.length-1 ] )
+                    ( Y.dependencies || [] ).every( X =>
+                        calls.findIndex( l => l == X.label ) < calls.findIndex( l => l == Y.label )
                     )
                 )
 

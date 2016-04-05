@@ -27,7 +27,7 @@ const mergePendingFrags = ( a, b ) => {
     }
 }
 
-export const createDispatcher = ( fragments, by_actions, state ) => {
+export const createDispatcher = ( fragmentList, by_actions, state ) => {
 
     state.current = state.current || {}
 
@@ -36,49 +36,49 @@ export const createDispatcher = ( fragments, by_actions, state ) => {
         const previousState = state.current
         const newState = { ...previousState }
 
-        let frags = ( by_actions[ action.type ] || [] ).slice()
-        let leafs = new Set
+        let mayChange = ( by_actions[ action.type ] || [] ).map( i => fragmentList[ i ] )
+        let leafs = []
 
-        while( frags.length ) {
+        while( mayChange.length ) {
 
             // grab the first one ( the one with lower index )
-            const f = frags.shift()
+            const c = mayChange.shift()
 
 
             // prepare params
-            const depValues     = f.dependencies
-                .map( frag => newState[ frag.literalPath ] )
+            const depValues     = c.dependencies
+                .map( x => newState[ x.literalPath ] )
 
-            const previousDepValues  = f.dependencies
-                .map( frag => previousState[ frag.literalPath ] )
+            const previousDepValues  = c.dependencies
+                .map( x => previousState[ x.literalPath ] )
 
-            const previousValue = previousState[ f.literalPath ]
+            const previousValue = previousState[ c.literalPath ]
 
             // call the function
-            const value = f.actions.length
-                ? f( action, ...depValues, previousValue, ...previousDepValues )
-                : f( ...depValues, previousValue, ...previousDepValues )
+            const value = c.actions.length
+                ? c.fn( action, ...depValues, previousValue, ...previousDepValues )
+                : c.fn( ...depValues, previousValue, ...previousDepValues )
 
             // check if the value have changed
             if ( value == previousValue )
                 continue
 
-            newState[ f.literalPath ] = value
+            newState[ c.literalPath ] = value
 
             // the value have changed,
             // should notify the leafs
-            f.leafs
-                .forEach( l => leafs.add( l ) )
+            leafs = [ ...leafs, ...c.leafs ]
 
             // and propage the change
-            mergePendingFrags( frags, f.next )
+            mergePendingFrags( mayChange, c.next.map( i => fragmentList[i] ) )
         }
 
         // notify the leafs
         leafs
+            .filter( (x,i,arr) => arr.indexOf( x ) == i )
             .forEach( l =>
 
-                l( ...l.dependencies.map( frag => newState[ frag.literalPath ] ) )
+                l( ...l.dependencies.map( x => newState[ x.literalPath ] ) )
 
             )
 
