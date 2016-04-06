@@ -13,14 +13,17 @@ export const create = fragmentTree => {
 
     const state = {}
 
+    const hooks = []
 
     return {
-        dispatch: createDispatch( storage, state ),
+        dispatch: createDispatch( storage, state, hooks ),
         ...createRegister( storage ),
 
         getValue: ( key ) => state.current[ storage.getId( key ) ],
 
         list: () => storage.sortedList(),
         by_id: () => storage.by_id(),
+
+        hook: fn => hooks.push( fn ),
     }
 }

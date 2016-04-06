@@ -71,7 +71,7 @@ const initValues = ( storage, initState ) => {
     return state
 }
 
-export const createDispatch = ( storage, state ) => {
+export const createDispatch = ( storage, state, hooks ) => {
 
     const by_actions = sortByAction( storage )
 
@@ -126,5 +126,8 @@ export const createDispatch = ( storage, state ) => {
 
         // loop
         state.current = newState
+
+        // hook
+        hooks && hooks.forEach( fn => fn( action, previousState, newState ) )
     }
 }
