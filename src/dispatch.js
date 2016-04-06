@@ -99,7 +99,7 @@ export const createDispatch = ( storage, state ) => {
             const c = mayChange.shift()
 
             // call the function
-            const value = callFragment( c, action, state.current, getValue, getPreviousValue )
+            const value = callFragment( c, action, newState, getValue, getPreviousValue )
 
             // check if the value have changed
             if ( value == previousState[c.id] )
