@@ -8,13 +8,10 @@ import sort     from '../src/sort/kahn'
 //   <=>   A should be before B
 const validity = ( graph, solution ) => {
 
-    expect( graph.length ).toBe( solution.length )
-
     const constraintValidity = graph
-        .every( (dep, A) =>
-            dep.every( B =>
-
-                solution.findIndex( X => A ) < solution.findIndex( X => B )
+        .every( (next, A) =>
+            next.every( B =>
+                solution.findIndex( X => A == X ) < solution.findIndex( X => B == X )
             )
         )
 

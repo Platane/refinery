@@ -1,6 +1,12 @@
+
+const inverseGraph = graph => {
+    const _graph = graph.map( () => [] )
+    graph.forEach( (arc, a) => arc.forEach( b => _graph[b].push(a) ) )
+    return _graph
+}
+
 /**
  *
- * /!\ side effect on graph
  *
  * @param graph
  *         graph[ A ][ i ] = B
@@ -14,44 +20,47 @@
  */
 const sort = ( graph ) => {
 
+    const _graph    = inverseGraph( graph )
+    const removed   = []
+
     const res = []
 
-    // all the node X without predecessors   <=>   there is no node Y such as Y -> X
-    const freeNode = []
+    // all the node X without predecessors
+    // <=> A is free if there is no (X,i) such as graph[ X ][ i ] = A
+    const freeNode = _graph
+        .reduce( (list, Aarc,  A) =>
 
-    // fill freeNode
-    for ( let X =graph.length; X--; ){
-        let Y
-        for ( Y = graph.length; Y-- && graph[ Y ].indexOf( X ) == -1 ; )
-            ;
-
-        if ( Y == -1 )
-            freeNode.push( X )
-    }
+            Aarc.length == 0
+                ? [ ...list, A ]
+                : list
+        ,[])
 
     while ( freeNode.length ) {
 
+        // push the node to the end of the sorted list
         const A = freeNode.shift()
         res.push( A )
-
-        // for each node B with      A -> B
-        // remove this node from the graph ( as A is remove from the graph )
-        graph[ A ].length = 0
-
+        removed[ A ] = true
 
         // search for new freeNode
-        for ( let X =graph.length; X--; ){
+        freeNode.push(
+            ...graph[A]
+                .reduce( (list, A) =>
 
-            if ( freeNode.indexOf( X ) == -1 && res.indexOf( X ) == -1 ) {
+                    // is already in the res list
+                    !removed[ A ]
 
-                let Y
-                for ( Y = graph.length; Y-- && graph[ Y ].indexOf( X ) == -1 ; )
-                    ;
+                    // is already in the feeNode list
+                    && !freeNode.some( K => K == A )
 
-                if ( Y == -1 )
-                    freeNode.push( X )
-            }
-        }
+                    // have no predecessor
+                    && _graph[ A ].every( X => removed[ X ] )
+
+                        ? [ ...list, A ]
+                        : list
+
+                ,[])
+            )
 
     }
 
