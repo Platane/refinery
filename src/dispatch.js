@@ -79,7 +79,7 @@ export const createDispatch = ( storage, state, hooks ) => {
     // sort all the next array
     storage.list().forEach( x => x.next = sortIdArr( storage, x.next ) )
 
-    state.current = initValues( storage, state.init )
+    state.current = initValues( storage, state.current )
 
     return ( action ) => {
 

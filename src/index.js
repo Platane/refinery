@@ -3,7 +3,7 @@ import {createDispatch}   from './dispatch'
 import {createRegister}   from './leaf'
 
 
-export const create = fragmentTree => {
+export const create = (fragmentTree, initialState) => {
 
     const storage = createFragmentStorage()
     extract( storage, fragmentTree )
@@ -11,7 +11,7 @@ export const create = fragmentTree => {
     sort( storage )
 
 
-    const state = {}
+    const state = {current: initialState}
 
     const hooks = []
 
