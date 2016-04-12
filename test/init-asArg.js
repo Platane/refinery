@@ -4,7 +4,7 @@ import {create}         from '../src'
 
 describe('init value', () => {
 
-    it('init action ( if no default value )', () =>{
+    it('init action ( with init state passed as arg )', () =>{
 
         let called = false
         const A = ( action, previousValue ) =>
