@@ -2,6 +2,11 @@ import {createFragmentStorage, sort, extract, linkDependencies}   from './storag
 import {createDispatch}   from './dispatch'
 import {createRegister}   from './leaf'
 
+const flatten = (object, path=[]) =>
+    typeof object != 'object'
+        ? { [ path.join('.') ]: object }
+        : Object.keys( object )
+            .reduce( (flat, key) => ({ ...flat, ...flatten( object[ key], [...path, key] ) })  ,{} )
 
 export const create = (fragmentTree, initialState) => {
 
@@ -10,8 +15,7 @@ export const create = (fragmentTree, initialState) => {
     linkDependencies( storage )
     sort( storage )
 
-
-    const state = {current: initialState}
+    const state = {current: initialState && flatten(initialState) }
 
     const hooks = []
 
