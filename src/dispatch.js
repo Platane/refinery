@@ -71,6 +71,52 @@ const initValues = ( storage, initState ) => {
     return state
 }
 
+const dispatch = ( storage, action, previousState, sources ) => {
+
+    const newState = { ...previousState }
+
+    const by_id = storage.by_id()
+    const getValue = key => newState[ storage.getId( key ) ]
+    const getPreviousValue = key => previousState[ storage.getId( key ) ]
+
+    const leafs = []
+    const mayChange = sources.map( i => by_id[ i ] )
+
+
+    while( mayChange.length ) {
+
+        // grab the first one ( the one with lower index )
+        const c = mayChange.shift()
+
+        // call the function
+        const value = callFragment( c, action, newState, getValue, getPreviousValue )
+
+        // check if the value have changed
+        if ( value == previousState[c.id] )
+            continue
+
+        newState[ c.id ] = value
+
+        // the value have changed,
+        // should notify the leafs
+        leafs.push( ...c.leafs )
+
+        // and propage the change
+        mergePendingFrags( mayChange, c.next.map( i => by_id[i] ) )
+    }
+
+    // notify the leafs
+    leafs
+        .filter( (x,i,arr) => arr.indexOf( x ) == i )
+        .forEach( leaf =>
+
+            leaf.fn( ...leaf.dependencies.map( id => newState[ id ] ) )
+
+        )
+
+    return newState
+}
+
 export const createDispatch = ( storage, state, hooks ) => {
 
     const by_actions = sortByAction( storage )
@@ -81,53 +127,41 @@ export const createDispatch = ( storage, state, hooks ) => {
 
     state.current = initValues( storage, state.current )
 
-    return ( action ) => {
+    let dispatching = false
+    const doLaterStack = []
 
-        const previousState = state.current
-        const newState = { ...previousState }
+    const safeDispatch = ( action ) => {
 
-        const by_id = storage.by_id()
-        const getValue = key => newState[ storage.getId( key ) ]
-        const getPreviousValue = key => previousState[ storage.getId( key ) ]
-
-        let mayChange = ( by_actions[ action.type ] || [] ).map( i => by_id[ i ] )
-        let leafs = []
-
-        while( mayChange.length ) {
-
-            // grab the first one ( the one with lower index )
-            const c = mayChange.shift()
-
-            // call the function
-            const value = callFragment( c, action, newState, getValue, getPreviousValue )
-
-            // check if the value have changed
-            if ( value == previousState[c.id] )
-                continue
-
-            newState[ c.id ] = value
-
-            // the value have changed,
-            // should notify the leafs
-            leafs.push( ...c.leafs )
-
-            // and propage the change
-            mergePendingFrags( mayChange, c.next.map( i => by_id[i] ) )
+        // queue the action if currently dispatching
+        if ( dispatching ) {
+            if ( doLaterStack.length > 50 )
+                throw 'stack overflow'
+            else
+                return doLaterStack.push( action )
         }
 
-        // notify the leafs
-        leafs
-            .filter( (x,i,arr) => arr.indexOf( x ) == i )
-            .forEach( leaf =>
 
-                leaf.fn( ...leaf.dependencies.map( id => newState[ id ] ) )
+        dispatching = true
 
-            )
+        // compute the new state,
+        // and notify the leafs
+        const newState = dispatch( storage, action, state.current, by_actions[ action.type ] || [] )
+
+
+
 
         // loop
         state.current = newState
 
         // hook
         hooks && hooks.forEach( fn => fn( action, previousState, newState ) )
+
+        dispatching = false
+
+        // unqueue the action
+        while( doLaterStack.length )
+            safeDispatch( doLaterStack.shift() )
     }
+
+    return safeDispatch
 }
