@@ -148,7 +148,7 @@ export const createDispatch = ( storage, state, hooks ) => {
         const newState = dispatch( storage, action, state.current, by_actions[ action.type ] || [] )
 
 
-
+        const previousState = state.current
 
         // loop
         state.current = newState
