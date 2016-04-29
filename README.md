@@ -79,7 +79,7 @@ const g = createGraph( fragments )
 // register a leaf
 const doSomething = ( fragCValue ) =>
     fragCValue
-g.register( doSomething, [fragC] )
+g.register( fragC, doSomething )
 
 // dispatch an action
 const action = {type:''}
