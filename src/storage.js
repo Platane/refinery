@@ -48,7 +48,12 @@ export const linkDependencies = ( storage ) => {
 
 export const extract = extract_
 
-
+/**
+ *
+ * sort the list of element. order by their dependencies ( topological sorting )
+ * apply the same sort in the next list of each element
+ *
+ */
 export const sort = ( storage ) => {
 
     const list = storage.list()
@@ -58,5 +63,13 @@ export const sort = ( storage ) => {
 
     const graph = list.map( x => x.next.map( id => index_by_id[id] ) )
 
-    kahnSort( graph ).forEach( (element, i) => list[ element ].index = i )
+    // index[ i ] = k   =>  the element k should be at the i position
+    const index = kahnSort( graph )
+
+    index.forEach( (element, i) => list[ element ].index = i )
+
+    // sort all the next array
+    const by_id = storage.by_id()
+    storage.list()
+        .forEach( x => x.next = x.next.sort( (a_id, b_id) => by_id[ a_id ].index > by_id[ b_id ].index ? 1 : -1 ) )
 }

@@ -1,5 +1,5 @@
 import expect   from 'expect'
-import sort     from '../src/sort/kahn'
+import sort     from '../../src/sort/kahn'
 
 
 //         graph[ A ][ i ] = B
@@ -19,7 +19,7 @@ const validity = ( graph, solution ) => {
 }
 
 
-describe('Kahn sort', () => {
+describe('topological sort', () => {
 
     it('empty graph', () =>{
 

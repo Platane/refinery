@@ -3,7 +3,7 @@ const parseDefinition = ( definition, path ) =>
     ({
         fn      : typeof definition == 'function' && definition || definition.fn,
         id      : definition.id || ( path ? path.join('.') : 'anonym-'+Math.random().toString(36).slice(2,8) ),
-        actions : definition.actions || [],
+        source  : !!definition.source,
         key     : definition,
         definition,
     })

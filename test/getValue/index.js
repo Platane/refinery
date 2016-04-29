@@ -1,5 +1,5 @@
 import expect           from 'expect'
-import {create}         from '../src'
+import {create}         from '../../src'
 
 
 describe('get value', () => {
@@ -14,14 +14,16 @@ describe('get value', () => {
 
     it('return the current value ( after dispatching )', () =>{
 
-        let i = 3
-        const A = () => i++
-        A.actions = ['z']
+        const A = action =>
+            action.type == 'z'
+                ? 'ok'
+                : 'not ok'
+        A.source=true
 
         const x = create( {A} )
 
         x.dispatch({type:'z'})
 
-        expect( x.getValue( A ) ).toBe( 4 )
+        expect( x.getValue( A ) ).toBe( 'ok' )
     })
 })

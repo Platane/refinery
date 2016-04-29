@@ -23,7 +23,7 @@ const fragA = ( action, previousState ) => {
 
     return newState
 }
-fragA.actions = [ 'actionName' ]
+fragA.source = true
 
 // this is a derivated fragment,
 // it react to fragment change
@@ -50,7 +50,7 @@ const fragC = ( action, fragBValue, previousState, previousFragBValue ) => {
 
     return newState
 }
-fragC.actions = [ 'actionName' ]
+fragC.source = true
 fragC.dependencies = [ fragB ]
 ```
 

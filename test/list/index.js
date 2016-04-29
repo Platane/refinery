@@ -1,5 +1,5 @@
 import expect           from 'expect'
-import {create}         from '../src'
+import {create}         from '../../src'
 
 
 describe('get list', () => {

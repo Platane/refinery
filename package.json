@@ -1,6 +1,6 @@
 {
   "name": "october",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Flux graph based implementation.",
   "dependencies": {},
   "devDependencies": {
@@ -26,7 +26,7 @@
   "scripts": {
     "build": "babel --out-dir ./dist --presets es2015 ./src",
     "bundle": "env NODE_ENV=\"production\" webpack",
-    "test": "env NODE_ENV=\"test\" mocha --compilers js:babel-register --recursive  --timeout 200 test",
+    "test": "env NODE_ENV=\"test\" mocha --compilers js:babel-register  --timeout 200 test/index.js",
     "test:watch": "npm test -- --watch --bail",
     "test:debug": "npm test -- --debug-brk"
   }

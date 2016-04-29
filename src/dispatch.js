@@ -27,33 +27,35 @@ const mergePendingFrags = ( a, b ) => {
     }
 }
 
-const sortByAction = ( storage ) => {
-
-    const by_actions = {}
-    storage.sortedList().forEach( x =>
-        x.actions.forEach( actionType =>
-            ( by_actions[ actionType ] = by_actions[ actionType ] || [] ).push( x.id )
-        )
-    )
-
-    return by_actions
-}
-
-const sortIdArr = ( storage, arr ) => {
-    const by_id = storage.by_id()
-    return arr.sort( (a_id, b_id) => by_id[ a_id ].index > by_id[ b_id ].index ? 1 : -1 )
-}
-
+/**
+ *
+ * inject dependencies as parameters and call the function
+ *
+ */
 const callFragment = ( fragment, action, state, getValue, getPreviousValue ) =>
     fragment.fn(
-        ...( fragment.actions.length ? [action] : [] ),
+
+        // the action ( if the function have registred action )
+        ...( fragment.source ? [action] : [] ),
+
+        // the dependencies registred values, in the same order
         ...fragment.dependencies.map( id => state[ id ] ),
+
+        // the previous state
         state[ fragment.id ],
+
+        // function to access special values in store
         getValue,
         getPreviousValue
     )
 
-
+/**
+ *
+ * for each fragment, compute the initValue,
+ *   which is either    - computed with the action '@@init'
+ *                      - computed from the dependencies
+ *
+ */
 const initValues = ( storage, initState ) => {
 
     const state = initState || {}
@@ -63,9 +65,7 @@ const initValues = ( storage, initState ) => {
     storage.sortedList()
         .filter( ({id}) => !(id in state ) )
         .forEach( x =>
-            state[ x.id ] = 'defaultValue' in x.definition
-                ? x.definition.defaultValue
-                : callFragment( x, initAction, state, key => state[ storage.getId(key) ], () => null )
+            state[ x.id ] = callFragment( x, initAction, state, key => state[ storage.getId(key) ], () => null )
         )
 
     return state
@@ -80,8 +80,7 @@ const dispatch = ( storage, action, previousState, sources ) => {
     const getPreviousValue = key => previousState[ storage.getId( key ) ]
 
     const leafs = []
-    const mayChange = sources.map( i => by_id[ i ] )
-
+    const mayChange = sources.slice()
 
     while( mayChange.length ) {
 
@@ -119,11 +118,8 @@ const dispatch = ( storage, action, previousState, sources ) => {
 
 export const createDispatch = ( storage, state, hooks ) => {
 
-    const by_actions = sortByAction( storage )
-
-
-    // sort all the next array
-    storage.list().forEach( x => x.next = sortIdArr( storage, x.next ) )
+    const sources = storage.sortedList()
+        .filter( x => x.source )
 
     state.current = initValues( storage, state.current )
 
@@ -145,7 +141,7 @@ export const createDispatch = ( storage, state, hooks ) => {
 
         // compute the new state,
         // and notify the leafs
-        const newState = dispatch( storage, action, state.current, by_actions[ action.type ] || [] )
+        const newState = dispatch( storage, action, state.current, sources )
 
 
         const previousState = state.current
