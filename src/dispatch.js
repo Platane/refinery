@@ -79,7 +79,7 @@ const dispatch = ( storage, action, previousState, sources ) => {
     const getValue = key => newState[ storage.getId( key ) ]
     const getPreviousValue = key => previousState[ storage.getId( key ) ]
 
-    const leafs = []
+    let leafs = []
     const mayChange = sources.slice()
 
     while( mayChange.length ) {
@@ -104,16 +104,12 @@ const dispatch = ( storage, action, previousState, sources ) => {
         mergePendingFrags( mayChange, c.next.map( i => by_id[i] ) )
     }
 
-    // notify the leafs
-    leafs
+    // eliminate leaf dub
+    leafs = leafs
         .filter( (x,i,arr) => arr.indexOf( x ) == i )
-        .forEach( leaf =>
 
-            leaf.fn( ...leaf.dependencies.map( id => newState[ id ] ) )
 
-        )
-
-    return newState
+    return { newState, leafs }
 }
 
 export const createDispatch = ( storage, state, hooks ) => {
@@ -141,13 +137,18 @@ export const createDispatch = ( storage, state, hooks ) => {
 
         // compute the new state,
         // and notify the leafs
-        const newState = dispatch( storage, action, state.current, sources )
+        const {newState, leafs} = dispatch( storage, action, state.current, sources )
 
 
         const previousState = state.current
 
         // loop
         state.current = newState
+
+        // notify leafs
+        leafs.forEach( leaf =>
+            leaf.fn( ...leaf.dependencies.map( id => newState[ id ] ) )
+        )
 
         // hook
         hooks && hooks.forEach( fn => fn( action, previousState, newState ) )
