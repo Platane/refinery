@@ -8,3 +8,4 @@ node_js:
 deploy:
   provider: npm
   api_key: "705ccf58-9d0c-48cb-acc4-b97b488c001f"
+  email: "me@platane.me"
