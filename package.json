@@ -1,5 +1,5 @@
 {
-  "name": "october",
+  "name": "refinery",
   "version": "0.4.0",
   "description": "Flux graph based implementation.",
   "dependencies": {},

@@ -1,7 +1,8 @@
-# october
+# refinery
 
 
-[![Build Status](https://travis-ci.org/Platane/october.svg?branch=master)](https://travis-ci.org/Platane/october)
+[![Build Status](https://img.shields.io/travis/Platane/refinery.svg?style=flat-square)](https://travis-ci.org/Platane/refinery)
+[![dependency status](https://img.shields.io/david/Platane/refinery.svg?style=flat-square)](https://david-dm.org/platane/refinery)
 
 Flux graph based implementation
 
