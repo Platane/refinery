@@ -22,9 +22,9 @@
     },
     "main": "dist/index.js",
     "scripts": {
-        "build": "./node_module/.bin/babel --out-dir ./dist ./src",
-        "bundle": "env NODE_ENV=\"development\" ./node_module/.bin/webpack",
-        "bundle:min": "env NODE_ENV=\"production\" ./node_module/.bin/webpack",
+        "build": "./node_modules/.bin/babel --out-dir ./dist ./src",
+        "bundle": "env NODE_ENV=\"development\" ./node_modules/.bin/webpack",
+        "bundle:min": "env NODE_ENV=\"production\" ./node_modules/.bin/webpack",
         "prepublish": "npm run build & npm run bundle & npm run bundle:min",
         "test": "env NODE_ENV=\"test\" mocha --compilers js:babel-register  --timeout 200 test/index.js",
         "test:watch": "npm test -- --watch --bail",
