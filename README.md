@@ -5,11 +5,6 @@
 
 Flux graph based implementation
 
-# properties to declare on a fragment
-actions
-defaultValue
-dependencies
-path
 
 # spec
 
@@ -23,7 +18,7 @@ const fragA = ( action, previousState ) => {
 
     return newState
 }
-fragA.source = true
+fragA.allAction = true
 
 // this is a derivated fragment,
 // it react to fragment change
@@ -50,7 +45,7 @@ const fragC = ( action, fragBValue, previousState, previousFragBValue ) => {
 
     return newState
 }
-fragC.source = true
+fragC.allAction = true
 fragC.dependencies = [ fragB ]
 ```
 

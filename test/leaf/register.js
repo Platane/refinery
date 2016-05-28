@@ -8,7 +8,7 @@ describe('register callback to a fragment change', () => {
 
         const A = action => action.type
 
-        A.source = true
+        A.allAction = true
 
         const x = create( {A} )
 
@@ -30,7 +30,7 @@ describe('register callback to a fragment change', () => {
 
         const A = action => action.type
 
-        A.source = true
+        A.allAction = true
 
         const x = create( {A} )
 

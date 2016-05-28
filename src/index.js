@@ -24,6 +24,7 @@ export const create = (fragmentTree, initialState) => {
         ...createRegister( storage ),
 
         getValue: ( key ) => state.current[ storage.getId( key ) ],
+        getState: () => state.current,
 
         list: () => storage.sortedList(),
         by_id: () => storage.by_id(),

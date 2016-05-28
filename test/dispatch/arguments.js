@@ -9,22 +9,17 @@ describe('arguments', () => {
 
         let check = false
 
-        const A = ( action, previousValue, getValue, getPreviousValue ) => {
+        const A = ( action, previousValue ) => {
 
             if ( check ) {
 
                 expect( action.type ).toBe( 'y' )
-                expect( previousValue ).toEqual( 'z' )
-
-                expect( typeof getValue ).toEqual( 'function' )
-                expect( typeof getPreviousValue ).toEqual( 'function' )
-                expect( getPreviousValue( A ) ).toEqual( 'z' )
-                expect( getValue( A ) ).toEqual( 'z' )
+                expect( previousValue ).toBe( 'z' )
             }
 
             return action.type
         }
-        A.source=true
+        A.allAction = true
 
         const x = create( {A} )
 
@@ -40,23 +35,54 @@ describe('arguments', () => {
         const A = action =>
             action.type
 
-        A.source = true
+        A.allAction = true
 
         let check = false
 
-        const B = ( valueA, previousValue, getValue, getPreviousValue ) => {
+        const B = ( valueA, previousValue, previousValueA ) => {
 
             if ( check ) {
 
-                expect( valueA ).toEqual( 'y' )
-                expect( previousValue ).toEqual( 'z0' )
-                expect( getValue( A ) ).toBe( 'y' )
-                expect( getPreviousValue( A ) ).toBe( 'z' )
+                expect( valueA ).toBe( 'y' )
+                expect( previousValue ).toBe( 'z0' )
+                expect( previousValueA ).toBe( 'z' )
             }
 
             return valueA+'0'
         }
         B.dependencies = [ A ]
+
+        const x = create( {A,B} )
+
+        x.dispatch({type:'z'})
+
+        check = true
+
+        x.dispatch({type:'y'})
+    })
+
+    it('fragment as projector dependency trigerred', () =>{
+
+        const A = action =>
+            action.type
+
+        A.allAction = true
+
+        let check = false
+
+        const B = ( valueA, previousValue, previousValueA ) => {
+
+            if ( check ) {
+
+                expect( valueA ).toBe( 'y' )
+                expect( previousValue ).toBe( undefined )
+                expect( previousValueA ).toBe( undefined )
+            }
+
+            return valueA+'0'
+        }
+        B.dependencies = [ A ]
+        B.projector = true
 
         const x = create( {A,B} )
 

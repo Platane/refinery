@@ -8,7 +8,7 @@ describe('pass initial state as argument', () => {
         let called = false
         const A = () => called = 6
 
-        A.source = true
+        A.allAction = true
 
         const x = create( {Z:{A}}, {Z:{A:10}} )
 

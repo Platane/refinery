@@ -7,5 +7,6 @@ describe('october', () => {
     require('./getValue')
     require('./leaf')
     require('./list')
+    require('./defensiveCheck')
 
 })

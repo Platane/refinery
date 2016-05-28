@@ -32,7 +32,7 @@ const mergePendingFrags = ( a, b ) => {
  * inject dependencies as parameters and call the function
  *
  */
-const callFragment = ( fragment, action, state, getValue, getPreviousValue ) =>
+const callFragment = ( fragment, action, state, previousState ) =>
     fragment.fn(
 
         // the action ( if the function have registred action )
@@ -42,11 +42,10 @@ const callFragment = ( fragment, action, state, getValue, getPreviousValue ) =>
         ...fragment.dependencies.map( id => state[ id ] ),
 
         // the previous state
-        state[ fragment.id ],
+        ...( fragment.projector ? [] : [ state[ fragment.id ] ] ),
 
         // function to access special values in store
-        getValue,
-        getPreviousValue
+        ...( fragment.projector ? [] : fragment.dependencies.map( id => previousState[ id ] ) )
     )
 
 /**
@@ -65,7 +64,7 @@ const initValues = ( storage, initState ) => {
     storage.sortedList()
         .filter( ({id}) => !(id in state ) )
         .forEach( x =>
-            state[ x.id ] = callFragment( x, initAction, state, key => state[ storage.getId(key) ], () => null )
+            state[ x.id ] = callFragment( x, initAction, state, {} )
         )
 
     return state
@@ -88,7 +87,7 @@ const dispatch = ( storage, action, previousState, sources ) => {
         const c = mayChange.shift()
 
         // call the function
-        const value = callFragment( c, action, newState, getValue, getPreviousValue )
+        const value = callFragment( c, action, newState, previousState )
 
         // check if the value have changed
         if ( value == previousState[c.id] )

@@ -11,7 +11,7 @@ describe('function call', () => {
         const A = ( action, previousValue ) =>
             called = true
 
-        A.source=true
+        A.allAction = true
 
         const x = create( {A} )
 
@@ -33,7 +33,7 @@ describe('function call', () => {
             return action.type
         }
 
-        B.source=true
+        B.allAction = true
 
 
         const A = ( X ) => {
@@ -66,7 +66,7 @@ describe('function call', () => {
         let called = false
 
         const B = () => 3
-        B.source=true
+        B.allAction = true
 
 
         const A = ( X ) =>

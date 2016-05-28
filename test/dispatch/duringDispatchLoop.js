@@ -9,7 +9,7 @@ it('should wait for the first dispatch loop to finish before starting another on
 
     const A = action => action.type
 
-    A.source = true
+    A.allAction = true
 
     const x = create( {A} )
     x.dispatch({type:'a'})

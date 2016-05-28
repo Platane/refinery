@@ -18,7 +18,7 @@ describe('get value', () => {
             action.type == 'z'
                 ? 'ok'
                 : 'not ok'
-        A.source=true
+        A.allAction = true
 
         const x = create( {A} )
 
