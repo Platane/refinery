@@ -22,7 +22,7 @@
     },
     "main": "dist/index.js",
     "scripts": {
-        "build": "./node_modules/.bin/babel --out-dir ./dist ./src",
+        "build": "./node_modules/.bin/babel --out-dir ./lib ./src",
         "bundle": "env NODE_ENV=\"development\" ./node_modules/.bin/webpack",
         "bundle:min": "env NODE_ENV=\"production\" ./node_modules/.bin/webpack",
         "prepublish": "npm run build & npm run bundle & npm run bundle:min",
