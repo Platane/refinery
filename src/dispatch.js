@@ -69,7 +69,7 @@ const initValues = ( fragmentList, initState ) => {
         .forEach( x =>
             state[ x.id ] = 'initValue' in x.definition
                     ? x.definition.initValue
-                    : ( state.definition.allActions || !state.source )
+                    : ( x.definition.allActions || !x.source )
                         ? callFragment( x, initAction, state, {} )
                         : null
         )
