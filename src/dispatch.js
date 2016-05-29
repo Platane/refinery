@@ -52,9 +52,10 @@ const callFragment = ( fragment, action, state, previousState ) =>
  * fragmentList should be sorted by dependencies
  *
  * for each fragment, compute the initValue,
- *   which is either    - set from the initValue param
- *                      - computed with the action '@@init'
- *                      - computed from the dependencies
+ *   which is either    - set from the initValue param if present
+ *                      - computed with the action '@@init' if allActions is set to true
+ *                      - computed from the dependencies if it's not a source
+ *                      - set to null
  *
  */
 const initValues = ( fragmentList, initState ) => {
@@ -68,7 +69,9 @@ const initValues = ( fragmentList, initState ) => {
         .forEach( x =>
             state[ x.id ] = 'initValue' in x.definition
                     ? x.definition.initValue
-                    : callFragment( x, initAction, state, {} )
+                    : ( state.definition.allActions || !state.source )
+                        ? callFragment( x, initAction, state, {} )
+                        : null
         )
 
     return state
