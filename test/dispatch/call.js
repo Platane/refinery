@@ -86,6 +86,19 @@ describe('function call', () => {
 
     it('should ensure that the call order is respected', () =>{
 
+        //   A
+        //   | \
+        //   B  |
+        //   |  |
+        //   C  |
+        //   | /
+        //   D
+        //
+        // when A change, B and D are taged as "should update"
+        // B is updated, which tag C as "should update"
+        //
+        // D is tagged before C, but should be called after in order to preserve the dependency order
+
         const stack = []
 
         const A = () => stack.push('A')
