@@ -24,8 +24,8 @@ A.initValue = 0
 // this one too
 const B = ( action, x ) =>
     x ++
-A.actions = [ 'B:increment' ]
-A.initValue = 0
+B.actions = [ 'B:increment' ]
+B.initValue = 0
 
 // this fragment depends on others, it is updated when the dependencies change
 const sum => ( a, b ) =>
