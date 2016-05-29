@@ -9,7 +9,6 @@ Flux graph based implementation
 
 # usage
 
-## baseic
 
 ```javascript
 
@@ -19,11 +18,13 @@ Flux graph based implementation
 const A = ( action, x ) =>
     x ++
 A.actions = [ 'A:increment' ]
+A.initValue = 0
 
 // this one too
 const B = ( action, x ) =>
     x ++
 A.actions = [ 'B:increment' ]
+A.initValue = 0
 
 // this fragment depends on others, it is updated when the dependencies change
 const sum => ( a, b ) =>
@@ -45,5 +46,3 @@ getValue( sum )
 // get notified when the fragment value change
 register( sum, ( x ) => console.log(`sum value is now ${x}`) )
 ```
-
-##

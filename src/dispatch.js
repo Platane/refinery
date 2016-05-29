@@ -51,32 +51,31 @@ const callFragment = ( fragment, action, state, previousState ) =>
 /**
  *
  * for each fragment, compute the initValue,
- *   which is either    - computed with the action '@@init'
+ *   which is either    - set from the initValue param
+ *                      - computed with the action '@@init'
  *                      - computed from the dependencies
  *
  */
-const initValues = ( storage, initState ) => {
+const initValues = ( fragmentList, initState ) => {
 
     const state = initState || {}
     const initAction = {type:'@@init'}
 
     // init all the values with actions
-    storage.sortedList()
+    fragmentList
         .filter( ({id}) => !(id in state ) )
         .forEach( x =>
-            state[ x.id ] = callFragment( x, initAction, state, {} )
+            state[ x.id ] = 'initValue' in x.definition
+                    ? x.definition.initValue
+                    : callFragment( x, initAction, state, {} )
         )
 
     return state
 }
 
-const dispatch = ( storage, action, previousState, sources ) => {
+const dispatch = ( fragment_by_id, action, previousState, sources ) => {
 
     const newState = { ...previousState }
-
-    const by_id = storage.by_id()
-    const getValue = key => newState[ storage.getId( key ) ]
-    const getPreviousValue = key => previousState[ storage.getId( key ) ]
 
     let leafs = []
     const mayChange = sources.slice()
@@ -100,10 +99,10 @@ const dispatch = ( storage, action, previousState, sources ) => {
         leafs.push( ...c.leafs )
 
         // and propage the change
-        mergePendingFrags( mayChange, c.next.map( i => by_id[i] ) )
+        mergePendingFrags( mayChange, c.next.map( i => fragment_by_id[i] ) )
     }
 
-    // eliminate leaf dub
+    // eliminate leaf duplication
     leafs = leafs
         .filter( (x,i,arr) => arr.indexOf( x ) == i )
 
@@ -111,12 +110,40 @@ const dispatch = ( storage, action, previousState, sources ) => {
     return { newState, leafs }
 }
 
-export const createDispatch = ( storage, state, hooks ) => {
+/**
+ * create a function which return the sorted list of fragment source for a given action
+ *
+ */
+const getSourceFactory = fragmentList => {
 
-    const sources = storage.sortedList()
-        .filter( x => x.source )
+    const by_action = {}
+    let all = fragmentList
+        .filter( x => x.definition.allAction )
 
-    state.current = initValues( storage, state.current )
+    fragmentList
+        .filter( x => !x.definition.allAction && x.definition.actions )
+        .forEach( x => x.definition.actions
+            .forEach( actionType  =>
+                ( by_action[ actionType ] = by_action[ actionType ] || all.slice() ).push( x )
+            )
+        )
+
+    all = all.sort( (a, b) => a.index < b.index ? 1 : -1 )
+
+    for( let actionType in by_action )
+        by_action[ actionType ] = by_action[ actionType ].sort( (a, b) => a.index < b.index ? 1 : -1 )
+
+    return actionType =>
+        actionType in by_action
+            ? by_action[ actionType ]
+            : all
+}
+
+export const createDispatch = ( fragment_list, fragment_by_id, state, hooks ) => {
+
+    const getSources = getSourceFactory( fragment_list )
+
+    state.current = initValues( fragment_list, state.current )
 
     let dispatching = false
     const doLaterStack = []
@@ -136,7 +163,7 @@ export const createDispatch = ( storage, state, hooks ) => {
 
         // compute the new state,
         // and notify the leafs
-        const {newState, leafs} = dispatch( storage, action, state.current, sources )
+        const {newState, leafs} = dispatch( fragment_by_id, action, state.current, getSources( action.type ) )
 
 
         const previousState = state.current

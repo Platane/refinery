@@ -8,7 +8,7 @@ describe('function call', () => {
 
         let called = false
 
-        const A = ( action, previousValue ) =>
+        const A = () =>
             called = true
 
         A.allAction = true
@@ -28,7 +28,7 @@ describe('function call', () => {
         let callStack = []
 
 
-        const B = ( action, previousValue ) => {
+        const B = ( action ) => {
             callStack.push( 'B' )
             return action.type
         }
