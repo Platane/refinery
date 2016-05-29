@@ -153,7 +153,7 @@ export const createDispatch = ( fragment_list, fragment_by_id, state, hooks ) =>
         // queue the action if currently dispatching
         if ( dispatching ) {
             if ( doLaterStack.length > 50 )
-                throw 'stack overflow'
+                throw 'dispatch called repeatedly'
             else
                 return doLaterStack.push( action )
         }
