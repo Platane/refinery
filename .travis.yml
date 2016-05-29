@@ -1,14 +1,12 @@
 language: node_js
 sudo: false
 node_js:
-    - '6'
+- '6'
 deploy:
-    provider: npm
-    api_key:
-        secure: HS8UwEXzAkeeKpbMeWwgExcn/oOg4u8ol4aggzEiS+82bqStYZrRrQezC4XKIFOnHLJaSY/g4PrQ7ngqF+B9zUMoZ9IQ0XEAd9miXgYabRVGDN506FhW1yp2tzjny+DNKoTfwXh3qDDanJSBTmvNNXphrNhgcw1nTQYBMJNZSaqyPpMJXwNVJ/VGcDkV1857TeXVSNMin0q5R8QS8DYv4ckTG+cV/TRHA/iMciZStr15zmOci9vfRNWfUZi1mf2i9+jLGuTW+mmcWxW9YWJkr9n+hORmgItEoSAk90Ilmwc1gWEx9Mp+NdmBSy8HLJIDmaR8bKuzGicbTxRJzwFZxQhVyd0QfLpp8ETOxjJMiMgt9qhVEUMcELJ2s2zvuvT5EbzVsJ20suIcMImqXvrIm/bX/hbfmcdAHWv3g9USlWksNUBjW2KCk5evnMfPN5Zri/92gMRZzZqDfOxMlGhyJ+KEthaQ+qfLbw8il/d6KrXxs1QLxhEwprryeuqQgrYgi3PI+d41PDmDXNwWhpEYaxRGuV08uAK2Z90gYGVyr2EBWcjLjNU8fxKKaDrv4oNMkBhpZaoCRYS0zXh05cWuwYJfykS1jJNqdcn90ahE60jAMUZiHSiHSHvZmLRtD1NEFPLYy5FZf/5jSbZf9gk/1D8lNabdfw/QHOKBjljIXd0=
-    email: me@platane.me
-    on:
-        branch: master
-
-    # so the node_modules file is not removed before deploy
-    skip_cleanup: true
+  provider: npm
+  email: me@platane.me
+  api_key:
+    secure: gf0edkkH6u3zzVY83ZbvSn7ODFWRmLN4KfQ0xgm8MoRtWTPNDuXAH+lDWx6F71BfEVSZHfCQepabZWJ6Tc6UpLwJgQB0UDUkLHCmpLgCi3+zdN44/YOUR+LGzHvHpL+hy7ZfQK6DwE14ggZ4l856hlgyOYvWKR0gIC4x5jfGerDlidIfAMG6ro4j4iiMs7AmJP32mQLf+239RWEPpn6Vid57MgXq0beOp53FJK3UiSFTn+rwOecJnvK7C+z+U3cc4eReEJbwdg3nBoIc03nC+ygrlv5gSFrSV3mOpmBecr8WdOmX8OLCuY3cNwUM5rgZwipxssdl74Bh5lJdmlzF4mo01ZUgCm++MYwe8CnSrIwmkgtKVDWzXWaHLKnoBIWnH8RKMlq+Sn0/OjQki98dlm14o6EhjilwGsJalUCcU52xbherJWsetAws3GJj9trl2mW7aIgM3nrVPgaI4Wte9KEO6JfblmwyEWPhzw8MX9ilAtCMlzNkXE4122fMJ0CM0FiLgiR/aAc8p3eMAqms2UxN8xFkNFZOIFUFjqGRUlo7Govzhe+kmLmlr56JwmPPbsdHVLqOmYBmafIyXvVby6MvN9LrJ8BAl4n6ordMLHXec+mmtb0UoWLOn5LcE2w48WYUgWlt52lZLmn+TqPwmRA5AqyMtTtDRRB13ne4J6Q=
+  on:
+    branch: master
+    repo: Platane/refinery
