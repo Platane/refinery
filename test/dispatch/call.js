@@ -61,7 +61,7 @@ describe('function call', () => {
         expect( callStack ).toEqual([ 'B', 'A', 'C' ])
     })
 
-    it('one source constant with dependencies, should be not be called', () =>{
+    it('one source with dependencies, dependency should not be called if source does not change', () =>{
 
         let called = false
 
@@ -82,5 +82,32 @@ describe('function call', () => {
         x.dispatch({type:'z'})
 
         expect( called ).toBe( false )
+    })
+
+    it('should ensure that the call order is respected', () =>{
+
+        const stack = []
+
+        const A = () => stack.push('A')
+        const B = () => stack.push('B')
+        const C = () => stack.push('C')
+        const D = () => stack.push('D')
+
+        A.initValue = -1
+        B.initValue = -1
+        C.initValue = -1
+        D.initValue = -1
+
+        A.allAction = true
+
+        B.dependencies = [ A ]
+        D.dependencies = [ A, C ]
+        C.dependencies = [ B ]
+
+        const x = create( {A,B,C,D} )
+
+        x.dispatch({type:'z'})
+
+        expect( stack ).toEqual( ['A', 'B', 'C', 'D'] )
     })
 })
