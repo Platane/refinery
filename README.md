@@ -1,8 +1,9 @@
 # refinery
 
 
-[![Build Status](https://img.shields.io/travis/Platane/refinery.svg?style=flat-square)](https://travis-ci.org/Platane/refinery)
+[![build status](https://img.shields.io/travis/Platane/refinery.svg?style=flat-square)](https://travis-ci.org/Platane/refinery)
 [![dependency status](https://img.shields.io/david/Platane/refinery.svg?style=flat-square)](https://david-dm.org/platane/refinery)
+[![code coverage](https://img.shields.io/coveralls/Platane/refinery.svg?style=flat-square)](https://coveralls.io/repos/109857)
 
 Flux graph based implementation
 
