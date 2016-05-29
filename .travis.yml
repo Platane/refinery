@@ -10,4 +10,4 @@ deploy:
   on:
     branch: master
     repo: Platane/refinery
-    skip_cleanup: true
+  skip_cleanup: true
