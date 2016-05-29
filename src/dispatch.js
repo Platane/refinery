@@ -49,6 +49,7 @@ const callFragment = ( fragment, action, state, previousState ) =>
     )
 
 /**
+ * fragmentList should be sorted by dependencies
  *
  * for each fragment, compute the initValue,
  *   which is either    - set from the initValue param

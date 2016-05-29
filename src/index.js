@@ -20,7 +20,7 @@ export const create = (fragmentTree, initialState) => {
     const hooks = []
 
     return {
-        dispatch: createDispatch( storage.list(), storage.by_id() , state, hooks ),
+        dispatch: createDispatch( storage.sortedList(), storage.by_id() , state, hooks ),
         ...createRegister( storage ),
 
         getValue: ( key ) => state.current[ storage.getId( key ) ],
