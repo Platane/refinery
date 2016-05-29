@@ -8,7 +8,7 @@ describe('register callback to a fragment change, then unregister', () => {
 
         const A = action => action.type
 
-        A.allAction = true
+        A.allActions = true
 
         const x = create( {A} )
 

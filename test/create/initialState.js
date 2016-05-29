@@ -8,7 +8,7 @@ describe('pass initial state as argument', () => {
         let called = false
         const A = () => called = 6
 
-        A.allAction = true
+        A.allActions = true
 
         const x = create( {Z:{A}}, {Z:{A:10}} )
 
@@ -23,7 +23,7 @@ describe('have initValue set', () => {
         let called = false
         const A = () => called = true
 
-        A.allAction = true
+        A.allActions = true
         A.initValue = 4
 
         const x = create( {A} )

@@ -11,7 +11,7 @@ describe('function call', () => {
         const A = () =>
             called = true
 
-        A.allAction = true
+        A.allActions = true
 
         const x = create( {A} )
 
@@ -33,7 +33,7 @@ describe('function call', () => {
             return action.type
         }
 
-        B.allAction = true
+        B.allActions = true
 
 
         const A = ( X ) => {
@@ -66,7 +66,7 @@ describe('function call', () => {
         let called = false
 
         const B = () => 3
-        B.allAction = true
+        B.allActions = true
 
 
         const A = ( X ) =>
@@ -111,7 +111,7 @@ describe('function call', () => {
         C.initValue = -1
         D.initValue = -1
 
-        A.allAction = true
+        A.allActions = true
 
         B.dependencies = [ A ]
         D.dependencies = [ A, C ]

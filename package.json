@@ -1,6 +1,6 @@
 {
     "name": "refinery-js",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "Flux graph based implementation.",
     "repository": "https://github.com/Platane/refinery",
     "files": [

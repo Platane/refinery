@@ -22,8 +22,8 @@ const parseDefinition = ( definition, path ) => {
         key                 : definition,
         definition,
 
-        source              : !!( definition.allAction || ( definition.actions && definition.actions.length ) ),
-        allAction           : !!definition.allAction,
+        source              : !!( definition.allActions || ( definition.actions && definition.actions.length ) ),
+        allActions           : !!definition.allActions,
         actions             : definition.actions
     }
 }

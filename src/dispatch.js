@@ -118,10 +118,10 @@ const getSourceFactory = fragmentList => {
 
     const by_action = {}
     let all = fragmentList
-        .filter( x => x.definition.allAction )
+        .filter( x => x.definition.allActions )
 
     fragmentList
-        .filter( x => !x.definition.allAction && x.definition.actions )
+        .filter( x => !x.definition.allActions && x.definition.actions )
         .forEach( x => x.definition.actions
             .forEach( actionType  =>
                 ( by_action[ actionType ] = by_action[ actionType ] || all.slice() ).push( x )

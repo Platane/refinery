@@ -19,7 +19,7 @@ describe('arguments', () => {
 
             return action.type
         }
-        A.allAction = true
+        A.allActions = true
 
         const x = create( {A} )
 
@@ -35,7 +35,7 @@ describe('arguments', () => {
         const A = action =>
             action.type
 
-        A.allAction = true
+        A.allActions = true
 
         let check = false
 
@@ -66,7 +66,7 @@ describe('arguments', () => {
         const A = action =>
             action.type
 
-        A.allAction = true
+        A.allActions = true
 
         let check = false
 
