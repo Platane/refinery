@@ -1,11 +1,14 @@
 language: node_js
-
 sudo: false
-
 node_js:
-  - "5"
-
+    - '6'
 deploy:
-  provider: npm
-  api_key: "705ccf58-9d0c-48cb-acc4-b97b488c001f"
-  email: "me@platane.me"
+    provider: npm
+    api_key:
+        secure: HS8UwEXzAkeeKpbMeWwgExcn/oOg4u8ol4aggzEiS+82bqStYZrRrQezC4XKIFOnHLJaSY/g4PrQ7ngqF+B9zUMoZ9IQ0XEAd9miXgYabRVGDN506FhW1yp2tzjny+DNKoTfwXh3qDDanJSBTmvNNXphrNhgcw1nTQYBMJNZSaqyPpMJXwNVJ/VGcDkV1857TeXVSNMin0q5R8QS8DYv4ckTG+cV/TRHA/iMciZStr15zmOci9vfRNWfUZi1mf2i9+jLGuTW+mmcWxW9YWJkr9n+hORmgItEoSAk90Ilmwc1gWEx9Mp+NdmBSy8HLJIDmaR8bKuzGicbTxRJzwFZxQhVyd0QfLpp8ETOxjJMiMgt9qhVEUMcELJ2s2zvuvT5EbzVsJ20suIcMImqXvrIm/bX/hbfmcdAHWv3g9USlWksNUBjW2KCk5evnMfPN5Zri/92gMRZzZqDfOxMlGhyJ+KEthaQ+qfLbw8il/d6KrXxs1QLxhEwprryeuqQgrYgi3PI+d41PDmDXNwWhpEYaxRGuV08uAK2Z90gYGVyr2EBWcjLjNU8fxKKaDrv4oNMkBhpZaoCRYS0zXh05cWuwYJfykS1jJNqdcn90ahE60jAMUZiHSiHSHvZmLRtD1NEFPLYy5FZf/5jSbZf9gk/1D8lNabdfw/QHOKBjljIXd0=
+    email: me@platane.me
+    on:
+        branch: master
+
+    # so the node_modules file is not removed before deploy
+    skip_cleanup: true
