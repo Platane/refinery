@@ -123,4 +123,31 @@ describe('function call', () => {
 
         expect( stack ).toEqual( ['A', 'B', 'C', 'D'] )
     })
+
+    it('should ensure that the call order is respected with dependant sources', () =>{
+
+        const stack = []
+
+        const A = () => stack.push('A')
+        const B = () => stack.push('B')
+        const C = () => stack.push('C')
+
+        A.initValue = -1
+        B.initValue = -1
+        C.initValue = -1
+
+        A.actions = ['z']
+        B.actions = ['z']
+        C.actions = ['z']
+
+        A.dependencies = [ B ]
+        B.dependencies = []
+        C.dependencies = [ A ]
+
+        const x = create( {A,B,C} )
+
+        x.dispatch({type:'z'})
+
+        expect( stack ).toEqual( ['B', 'A', 'C'] )
+    })
 })

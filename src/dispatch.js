@@ -132,10 +132,10 @@ const getSourceFactory = fragmentList => {
             )
         )
 
-    all = all.sort( (a, b) => a.index < b.index ? 1 : -1 )
+    all = all.sort( (a, b) => a.index > b.index ? 1 : -1 )
 
     for( let actionType in by_action )
-        by_action[ actionType ] = by_action[ actionType ].sort( (a, b) => a.index < b.index ? 1 : -1 )
+        by_action[ actionType ] = by_action[ actionType ].sort( (a, b) => a.index > b.index ? 1 : -1 )
 
     return actionType =>
         actionType in by_action
