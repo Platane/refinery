@@ -32,8 +32,9 @@ const mergePendingFrags = ( a, b ) => {
  * inject dependencies as parameters and call the function
  *
  */
-const callFragment = ( fragment, action, state, previousState ) =>
-    fragment.fn(
+const callFragment = ( fragment, action, state, previousState ) => {
+
+    const args = [
 
         // the action ( if the function have registred action )
         ...( fragment.source ? [action] : [] ),
@@ -46,7 +47,15 @@ const callFragment = ( fragment, action, state, previousState ) =>
 
         // function to access special values in store
         ...( fragment.projector ? [] : fragment.dependencies.map( id => previousState[ id ] ) )
-    )
+
+    ]
+
+    try {
+        return fragment.fn.apply( null, args )
+    } catch( err ){
+        console.error( `error while updating the fragment ${ fragment.id } for the event ${ action.type }`, err, action )
+    }
+}
 
 /**
  * fragmentList should be sorted by dependencies
@@ -176,9 +185,15 @@ export const createDispatch = ( fragment_list, fragment_by_id, state, hooks ) =>
         state.current = newState
 
         // notify leafs
-        leafs.forEach( leaf =>
-            leaf.fn( ...leaf.dependencies.map( id => newState[ id ] ) )
-        )
+        leafs.forEach( leaf => {
+            const args = leaf.dependencies.map( id => newState[ id ] )
+
+            try{
+                leaf.fn( ...args )
+            } catch( err ){
+                console.error( `error while executing registred handler for the fragment ${ leaf.dependencies.join(', ') } for the event ${ action.type }`, err )
+            }
+        })
 
         // hook
         hooks && hooks.forEach( fn => fn( action, previousState, newState ) )
