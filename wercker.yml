@@ -39,10 +39,6 @@ deploy-doc:
 
         - script:
             name: build docs
-            code: gitbook help
-
-        - script:
-            name: build docs
             code: gitbook install && gitbook build
 
         - takuma7/gh-pages:
