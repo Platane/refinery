@@ -11,6 +11,7 @@ build:
             code: npm run build
 
         - script:
+            # need COVERALLS_REPO_TOKEN env var set
             name: test
             code: |
                 npm run test:coverage
@@ -26,6 +27,7 @@ publish-npm:
             code: npm run prepublish
 
         - kwakayama/npm-publish:
+            # need NPM_EMAIL, NPM_AUTH_TOKEN env var set
             name: publish to npm
 
 deploy-doc:
@@ -33,7 +35,9 @@ deploy-doc:
 
         - script:
             name: build doc
-            code: npm run docs:build
+            code: |
+                npm run docs:prepare
+                npm run docs:build
 
         - takuma7/gh-pages:
             name: deploy doc to gh-pages
