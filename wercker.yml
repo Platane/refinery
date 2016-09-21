@@ -1,0 +1,41 @@
+box: node:6
+
+build:
+    steps:
+        - script:
+            name: npm install
+            code: env NODE_ENV=dev npm install --quiet && npm list --depth 0  --quiet
+
+        - script:
+            name: build
+            code: npm run build
+
+        - script:
+            name: test
+            code: |
+                npm run test:coverage
+                npm run coverage:report
+
+
+
+publish-npm:
+    steps:
+
+        - script:
+            name: prepublish
+            code: npm run prepublish
+
+        - kwakayama/npm-publish:
+            name: publish to npm
+
+deploy-doc:
+    steps:
+
+        - script:
+            name: build doc
+            code: npm run docs:build
+
+        - takuma7/gh-pages:
+            name: deploy doc to gh-pages
+            token: $GH_TOKEN
+            basedir: _book

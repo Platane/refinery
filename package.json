@@ -47,6 +47,7 @@
         "coverage:report"       : "nyc report --reporter=text-lcov | coveralls",
 
         "docs:prepare"          : "gitbook install",
+        "docs:build"            : "npm run docs:prepare && gitbook build",
         "docs:watch"            : "npm run docs:prepare && gitbook serve"
     }
 }
