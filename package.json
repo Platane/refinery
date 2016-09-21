@@ -40,7 +40,7 @@
         "prepublish"            : "npm run build & npm run bundle & npm run bundle:min",
 
         "test"                  : "env NODE_ENV=\"test\" mocha --compilers js:babel-register  --timeout 200 test/spec/index.js",
-        "test:coverage"         : "nyc --require babel-register mocha test/index.js",
+        "test:coverage"         : "nyc --require babel-register mocha test/spec/index.js",
         "test:browser"          : "webpack-dev-server --port 8084 --content-base ./ --config ./webpack.config.test.js -d ",
 
         "coverage:report"       : "nyc report --reporter=text-lcov | coveralls"
