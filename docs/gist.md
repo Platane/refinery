@@ -2,81 +2,61 @@
 
 Let's build a refinery app example.
 
-## Declare fragment
-
-Fragment are pure functions. Values computed by this functions compose the global state of the app.  
-
-Let's declare three of them with different behaviors.
-
-### Computed from action
-
-This fragment value is set by an action.
 
 ```javascript
+
+/**
+ * The application is describeb with fragments.
+ * Each fragment is responsible to manage an atomic part of the state.
+ * It is a pure function which takes as input  an action / values of other fragments ( or both ) and output the new value.
+ *
+ * After an action, fragment are updated in cascade, composing the new state.
+ */
+
+
+// This fragment will react to actions with type 'pattern:set'
+// and take the value passed as payload.
 const pattern = action =>
     action.payload.pattern
 
 pattern.actions = [ 'setPattern' ]
-```
-
-This fragment will react to actions with type `'pattern:set'` and take the value passed as payload.
 
 
-### Computed from action and previous state
-
-This fragment value depends of the previous value.
-
-```javascript
+// This fragment output value depends of his previous value.
+// which is passed as second arguments
 const wordList = ( action, list ) =>
     [ ...list, action.payload.word ]
 
 wordList.actions = [ 'newWord' ]
-wordList.initValue = []
-```
+wordList.initValue = []         
 
-The first argument is the action. Notice that this time we will use the second one, which is the value returned at the last update.
 
-> As you may guess, at init the value is set to [] with the `initValue` property.
-
-This fragment takes the item passed as payload and push it to the list.
-
-> Note that the returned value is a new array. Refinery use == to detect change.
-
-### Computed from other fragments
-
-This fragment value will be computed from the values of other fragments.
-
-```javascript
+// This fragment value will be computed from the values of other fragments.
 const matchingWords = ( wordList, pattern ) =>
     matchingWords.filter( word => word.includes( pattern ) )
 
 matchingWords.dependencies = [ wordList, pattern ]
-```
-
-As this fragment did not declare action to listen, the first argument is not an action. Instead, it gets the value of the fragments declared as dependencies.
-
-> Every time an action change one of the dependencies value, this fragment will be updated.
 
 
-## Create the dispatcher
 
-Now it's time to build the reducer and have the dispatcher ready to use.
-
-```javascript
+// create the reducer
 import create from 'refinery-js'
 
-const {dispatch, register} = create( { pattern, wordList, matchingWords } )
-```
+const {dispatch, register, getValue} = create( { pattern, wordList, matchingWords } )
 
-Refinery will expose function to alter the state, register callback to change and access values.
 
-```javascript
+// return the current value of the fragment
+console.log(`The pattern is ${ getValue( pattern ) }`)
+
+
+// register listener to change
 const callback = words =>
     console.log(`Those words contains the pattern : ${ words.join() }`)
 
 register( matchingWords, callback )
-```
 
-```javascript
+
+// dispatch an action to change the state
 dispatch( { type : 'newWord', payload : { word : 'dinosaure' } } )
+
 ```
