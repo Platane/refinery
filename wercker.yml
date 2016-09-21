@@ -34,10 +34,12 @@ deploy-doc:
     steps:
 
         - script:
-            name: build doc
-            code: |
-                npm run docs:prepare
-                npm run docs:build
+            name: install gitbook
+            code: sudo npm install -g gitbook
+
+        - script:
+            name: build docs
+            code: gitbook install && gitbook build
 
         - takuma7/gh-pages:
             name: deploy doc to gh-pages
