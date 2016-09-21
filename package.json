@@ -16,6 +16,7 @@
         "mocha"                 : "~3.0.0",
         "nyc"                   : "~8.1.0",
         "coveralls"             : "~2.11",
+        "gitbook-cli"           : "~2.3.0",
         "webpack"               : "~1.13.2",
         "webpack-dev-server"    : "~1.15.0",
         "file-loader"           : "~0.9.0",
@@ -43,6 +44,9 @@
         "test:coverage"         : "nyc --require babel-register mocha test/spec/index.js",
         "test:browser"          : "webpack-dev-server --port 8084 --content-base ./ --config ./webpack.config.test.js -d ",
 
-        "coverage:report"       : "nyc report --reporter=text-lcov | coveralls"
+        "coverage:report"       : "nyc report --reporter=text-lcov | coveralls",
+
+        "docs:prepare"          : "gitbook install",
+        "docs:watch"            : "npm run docs:prepare && gitbook serve"
     }
 }
