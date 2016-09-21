@@ -35,7 +35,7 @@ deploy-doc:
 
         - script:
             name: install gitbook
-            code: sudo npm install -g gitbook
+            code: sudo npm install -g gitbook-cli
 
         - script:
             name: build docs
