@@ -1,34 +1,48 @@
-import {createFragmentStorage, sort, extract, linkDependencies}   from './storage'
-import {createDispatch}   from './dispatch'
-import {createRegister}   from './leaf'
+import { parseFragmentTree }    from './parse'
+import { sort }                 from './sort'
+import { initState }            from './initState'
+import { initCold }             from './initCold'
+import createDispatcher         from './dispatcher/create'
+import createRegister           from './listener/create'
+import createValuerGetter       from './getValue/create'
 
-const flatten = (object, path=[]) =>
-    typeof object != 'object'
-        ? { [ path.join('.') ]: object }
-        : Object.keys( object )
-            .reduce( (flat, key) => ({ ...flat, ...flatten( object[ key], [...path, key] ) })  ,{} )
+const createStore = ( fragmentTree ) => {
 
-export const create = (fragmentTree, initialState) => {
+    // extract all the fragment
+    let fragment_list           = parseFragmentTree( fragmentTree )
+    const fragment_by_name      = {}
+    fragment_list.forEach( fragment => fragment_by_name[fragment.name] = fragment )
 
-    const storage = createFragmentStorage()
-    extract( storage, fragmentTree )
-    linkDependencies( storage )
-    sort( storage )
+    // extract the dependencies
+    fragment_list.forEach( fragment => fragment.extractDependencies( fragment_by_name, fragmentTree ) )
 
-    const state = {current: initialState && flatten(initialState) }
+    // flag as cold the fragment that are
+    initCold( fragment_by_name )
 
-    const hooks = []
+    // sort the fragments
+    // ( set the index attributes )
+    sort( fragment_by_name )
+
+    // init state
+    const state = {
+        current         : null,
+        previous        : null,
+        cold            : {},
+    }
+    state.current       = initState( fragment_by_name )
+    state.previous      = { ...state.current }
+    state.outdated      = {}
+    fragment_list
+        .filter( fragment => fragment.cold )
+        .forEach( fragment => state.outdated[ fragment.name ] = true )
 
     return {
-        dispatch: createDispatch( storage.sortedList(), storage.by_id() , state, hooks ),
-        ...createRegister( storage ),
-
-        getValue: ( key ) => state.current[ storage.getId( key ) ],
-        getState: () => state.current,
-
-        list: () => storage.sortedList(),
-        by_id: () => storage.by_id(),
-
-        hook: fn => hooks.push( fn ),
+        ...createDispatcher( fragment_by_name, state ),
+        ...createRegister( fragment_by_name, state ),
+        ...createValuerGetter( fragment_by_name, state ),
+        getState : () => state.current
     }
 }
+
+
+module.exports = { create : createStore }
