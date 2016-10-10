@@ -3,7 +3,11 @@ import call             from './call'
 import computeNewState  from './computeNewState'
 
 
-
+/**
+ *
+ * return a function which given an action type return the fragments that should be updated
+ * ordered by priority
+ */
 const createSourceGetter = fragment_by_name => {
 
     const by_action        = {}

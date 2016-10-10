@@ -25,9 +25,15 @@ const createStore = ( fragmentTree ) => {
 
     // init state
     const state = {
+
+        // old the current value for all the fragment, by name
         current         : null,
+
+        // old the previous value for all the fragment, by name
         previous        : null,
-        cold            : {},
+
+        // old which fragment is "outdated" = not updated because of lazy computation, whereas it should have been in the last loop
+        outdated        : {},
     }
     state.current       = initState( fragment_by_name )
     state.previous      = { ...state.current }
@@ -36,11 +42,15 @@ const createStore = ( fragmentTree ) => {
         .filter( fragment => fragment.cold )
         .forEach( fragment => state.outdated[ fragment.name ] = true )
 
+    // list of callback to call after each new state computation ( for debugging purpose )
+    const hooks = []
+
     return {
-        ...createDispatcher( fragment_by_name, state ),
+        ...createDispatcher( fragment_by_name, state, hooks ),
         ...createRegister( fragment_by_name, state ),
         ...createValuerGetter( fragment_by_name, state ),
-        getState : () => state.current
+        getState        : () => state.current,
+        _registerHook   : callback => hooks.push( callback )
     }
 }
 
