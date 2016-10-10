@@ -30,6 +30,7 @@ const parseFragmentDefinition = ( definition, path ) => {
         name,
         stateless,
         definition,
+        allActions,
         actions,
 
         index               : null,

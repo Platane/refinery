@@ -48,4 +48,49 @@ describe('arguments parsing', function(){
         })
 
     })
+
+    describe('all actions', function(){
+
+        it('should update to any action when register to "allActions"', function(){
+
+            const called = []
+
+            const A = ( action ) =>
+                called.push( action.type )
+            A.allActions = true
+
+
+            const store = create({ A })
+
+            store.dispatch({ type:'aaa' })
+            store.dispatch({ type:'bbb' })
+
+            expect( called )
+                .toEqual([ '@@init', 'aaa', 'bbb' ])
+        })
+    })
+
+    describe('equal', function(){
+
+        it('should use the "equal" compare function to determine equality', function(){
+
+            const called = []
+
+            const A = ( action ) =>
+                ({ key : 3 })
+            A.actions = [ 'aaa' ]
+            A.equal = ( a,b ) => a.key == b.key
+
+
+            const store = create({ A })
+
+            store.register( A, value => called.push( value.key ) )
+
+            store.dispatch({ type:'aaa' })
+
+            expect( called )
+                .toEqual([ ])
+        })
+
+    })
 })
