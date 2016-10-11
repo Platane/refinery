@@ -93,6 +93,7 @@ describe('warning', function(){
     })
 
     describe('in fragment definition',function(){
+
         describe('stateless flag with action',function(){
             it('should throw error and console.warn', function(){
 
@@ -113,6 +114,7 @@ describe('warning', function(){
                 expect( this.warnStack.length ).toBe( 1 )
             })
         })
+
         describe('unexpected action',function(){
             it('should throw error and console.warn', function(){
 
@@ -132,6 +134,7 @@ describe('warning', function(){
                 expect( this.warnStack.length ).toBe( 1 )
             })
         })
+
         describe('unexpected dependency',function(){
             it('should throw error and console.warn', function(){
 
@@ -148,6 +151,27 @@ describe('warning', function(){
 
                 expect( error ).toExist( )
                 expect( this.warnStack.length ).toBe( 1 )
+            })
+        })
+
+        describe('cyclical dependencies',function(){
+            it('should throw error and console.warn', function(){
+
+                const A = ( action, value ) => value+1
+                const B = ( action, value ) => value+1
+
+                A.dependencies = [ B ]
+                B.dependencies = [ A ]
+
+
+                let error
+                try{
+                    create({ A, B })
+                }catch( err ){
+                    error = err
+                }
+
+                expect( error ).toExist( )
             })
         })
     })
