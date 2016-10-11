@@ -1,4 +1,5 @@
-# Gist
+Gist
+====
 
 Let's build a refinery app example.
 
