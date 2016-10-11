@@ -58,6 +58,7 @@ const createDispatcher = ( fragment_by_name, state, hooks ) => {
                 listener.callback.apply( null, args )
             } catch( err ){
                 console.error( `error while executing registred handler for the fragment ${ listener.fragments.join(', ') } for the event ${ action.type }`, err )
+                throw err
             }
         })
 

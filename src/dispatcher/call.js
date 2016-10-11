@@ -28,6 +28,7 @@ const call = ( fragment, action, state, previousState ) => {
         return fragment.update.apply( null, args )
     } catch( err ){
         console.error( `error while updating the fragment ${ fragment.name } for the event ${ action.type }`, err, action )
+        throw err
     }
 }
 
