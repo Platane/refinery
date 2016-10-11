@@ -26,9 +26,11 @@ publish-npm:
             name: prepublish
             code: npm run prepublish
 
-        - kwakayama/npm-publish:
-            # need NPM_EMAIL, NPM_AUTH_TOKEN env var set
+        - nahody/npm-publish:
             name: publish to npm
+            username: $NPM_USERNAME
+            email: $NPM_EMAIL
+            password: $NPM_AUTH_TOKEN
 
 deploy-doc:
     steps:
