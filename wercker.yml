@@ -26,7 +26,7 @@ publish-npm:
             name: prepublish
             code: npm run prepublish
 
-        - nahody/npm-publish:
+        - nahody/npm_publish:
             name: publish to npm
             username: $NPM_USERNAME
             email: $NPM_EMAIL
