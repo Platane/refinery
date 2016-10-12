@@ -26,11 +26,9 @@ publish-npm:
             name: prepublish
             code: npm run prepublish
 
-        - nahody/npm_publish:
+        - turistforeningen/npm-publish:
+            # need NPM_TOKEN env var set
             name: publish to npm
-            username: $NPM_USERNAME
-            email: $NPM_EMAIL
-            password: $NPM_AUTH_TOKEN
 
 deploy-doc:
     steps:
