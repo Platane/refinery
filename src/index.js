@@ -50,7 +50,8 @@ const createStore = ( fragmentTree ) => {
         ...createRegister( fragment_by_name, state ),
         ...createValuerGetter( fragment_by_name, state ),
         getState        : () => state.current,
-        _registerHook   : callback => hooks.push( callback )
+        _registerHook   : callback => hooks.push( callback ),
+        _getFragments   : () => fragment_list,
     }
 }
 

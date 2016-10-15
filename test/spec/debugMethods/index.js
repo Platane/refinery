@@ -38,6 +38,38 @@ describe('debug methods', function(){
         })
     })
 
+    describe('getFragments', function(){
+
+        it('sould expose the method "_getFragments"', function(){
+
+            const store = create({})
+
+            expect( store._getFragments ).toExist()
+        })
+
+        it('sould return the list of fragment', function(){
+
+            const A = () => 0
+
+            const B = () => 0
+            B.dependencies = [ A ]
+
+            const store = create({ u: { A, B } })
+
+            store._getFragments()
+                .forEach( f =>
+                    expect( f )
+                        .toContainKeys([ 'index', 'name', 'stateless', 'cold', 'dependencies' ])
+                )
+
+            expect( store._getFragments().find( x => x.name == 'u.A' ).dependencies )
+                .toEqual([ ])
+
+            expect( store._getFragments().find( x => x.name == 'u.B' ).dependencies )
+                .toEqual([ 'u.A' ])
+        })
+    })
+
     xdescribe('injectState', function(){
 
         it('sould expose the method "_injectState"', function(){
