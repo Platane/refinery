@@ -10,6 +10,10 @@ describe('lazy evaluation', function(){
         //        B
         //      /   \
         //    C       D
+        //    |
+        //    E
+        //    |
+        //    F
 
         this.calls          = []
 
@@ -100,10 +104,48 @@ describe('lazy evaluation', function(){
         const store = create({ A,B,C,D })
         this.calls.length = 0
 
-        
+
         store.dispatch({ type:'incr', payload:{ value: 3 } })
 
         expect( this.calls ).toEqual([ 'A', 'B', 'D' ])
+    })
+
+    it('should propage the outdated flag', function(){
+
+        //    A
+        //    |
+        //    B
+        //    |
+        //    C
+        //    |
+        //    D
+
+        const A        = ( action ) =>  action.payload.value
+        A.initValue    = 0
+        A.actions      = ['incr']
+
+        const B        = a => a+'b'
+        B.dependencies = [ A ]
+        B.stateless    = true
+
+        const C        = b => b+'c'
+        C.dependencies = [ B ]
+        C.stateless    = true
+
+        const D        = c => c+'d'
+        D.dependencies = [ C ]
+        D.stateless    = true
+
+        const store = create({ A,B,C,D })
+
+        // this will flag all the chain as non-outdated
+        store.getValue(D)
+
+        // this should reset the whole chain as outdated
+        store.dispatch({ type:'incr', payload:{ value: 10 } })
+
+        // if not this will not return the wished value
+        expect( store.getValue(D) ).toBe( '10bcd' )
     })
 
 

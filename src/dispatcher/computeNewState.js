@@ -67,6 +67,22 @@ const computeNewState = ( fragment_by_name, state, action, sources ) => {
         }
     }
 
+    // propage outdated
+    const toOutdate = Object.keys( outdated )
+        .filter( name => outdated[name] )
+
+    while( toOutdate.length ){
+
+        const name = toOutdate.shift()
+
+        fragment_by_name[name].nexts
+            .filter( name => !outdated[name] )
+            .forEach( name => {
+                outdated[name] = true
+                toOutdate.push( name )
+            })
+    }
+
     return {
         state   : newState,
         changed,
