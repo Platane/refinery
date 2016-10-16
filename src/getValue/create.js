@@ -38,6 +38,8 @@ const createGetValue = ( fragment_by_name, state, hooks ) => {
             const newState = { ...state.current }
             const action   = { type:'@@lazyUpdate' }
 
+            state.outdated = { ...state.outdated }
+
             compute( fragment_by_name, name, action, newState, {}, state.outdated )
 
             state.previous = state.current

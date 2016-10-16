@@ -15,7 +15,7 @@ const call = ( fragment, action, state, previousState ) => {
 
     if ( !fragment.stateless ){
 
-        // next, the previosu state
+        // next, the previous state
         args.push( previousState[ fragment.name ] )
 
         // next, the previous dependencies state

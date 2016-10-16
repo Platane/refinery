@@ -36,6 +36,40 @@ describe('debug methods', function(){
 
             expect( called ).toBe( true )
         })
+
+        it('sould call the callback after a lazy update', function(){
+
+            const A = ( action, previous ) => previous+1
+            A.initValue = 1
+            A.actions   = ['aaa']
+
+            const B = ( A ) => A+10
+            B.dependencies = [ A ]
+            B.stateless    = true
+
+            const store = create({x:{a:A},B})
+
+            let stack = []
+            store._registerHook( (action, state) => stack.push({ action, state:{ ...state } }) )
+
+            store.dispatch({type:'aaa'})
+            store.getValue(B)
+            store.dispatch({type:'aaa'})
+
+            expect( stack.length ).toBe( 3 )
+            expect( stack[0].action.type ).toBe( 'aaa' )
+            expect( stack[0].state.outdated ).toEqual({ 'B': true, 'x.a': false })
+            expect( stack[0].state.current ).toContain({ 'x.a': 2 })
+
+            expect( stack[1].action.type ).toBe( '@@lazyUpdate' )
+            expect( stack[1].state.outdated ).toEqual({ 'B': false, 'x.a': false })
+            expect( stack[1].state.current ).toEqual({ 'B': 12, 'x.a': 2 })
+
+            expect( stack[2].action.type ).toBe( 'aaa' )
+            expect( stack[2].state.outdated ).toEqual({ 'B': true, 'x.a': false })
+            expect( stack[2].state.current ).toContain({ 'x.a': 3 })
+
+        })
     })
 
     describe('getFragments', function(){

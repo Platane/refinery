@@ -47,8 +47,8 @@ const createStore = ( fragmentTree ) => {
 
     return {
         ...createDispatcher( fragment_by_name, state, hooks ),
-        ...createRegister( fragment_by_name, state ),
-        ...createValuerGetter( fragment_by_name, state ),
+        ...createRegister( fragment_by_name, state, hooks ),
+        ...createValuerGetter( fragment_by_name, state, hooks ),
         getState        : () => state.current,
         _registerHook   : callback => hooks.push( callback ),
         _getFragments   : () => fragment_list,
