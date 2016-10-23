@@ -48,12 +48,17 @@ const createDispatcher = ( fragment_by_name, state, hooks ) => {
         const oldState = state.current
         const { state:newState, outdated, changed } = computeNewState( fragment_by_name, state.current, action, getSources( action.type ) )
 
+        state.current  = newState
+        state.previous = oldState
+        state.outdated = { ...state.outdated, ...outdated }
+
+
         // notify listeners
         const listeners = [].concat( ...changed.map( name => fragment_by_name[ name ].listeners ) )
             .filter( (a,i,arr) => arr.indexOf( a ) == i )
 
         listeners.forEach( listener => {
-            const args = listener.fragments.map( name => newState[ name ] )
+            const args = listener.fragments.map( name => state.current[ name ] )
             try{
                 listener.callback.apply( null, args )
             } catch( err ){
@@ -61,12 +66,6 @@ const createDispatcher = ( fragment_by_name, state, hooks ) => {
                 throw err
             }
         })
-
-
-        state.current  = newState
-        state.previous = oldState
-        state.outdated = { ...state.outdated, ...outdated }
-
 
         // hook
         hooks && hooks.forEach( fn => fn( action, state ) )

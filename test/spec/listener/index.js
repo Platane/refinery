@@ -24,6 +24,26 @@ describe('listener', function(){
         expect( stack[0] ).toEqual( [4,3] )
     })
 
+    it('should return current value with getValue in callback', function(){
+
+        const B = ( action ) => action.payload.value
+        B.initValue = 0
+        B.actions = ['incr']
+
+        const A = ( b ) => b+1
+        A.dependencies = [ B ]
+
+
+        const store = create({ A, B })
+
+        const stack = []
+        store.register( A, B, () => stack.push( store.getValue( A ) ) )
+
+        store.dispatch({ type:'incr', payload:{ value: 3 } })
+
+        expect( stack[0] ).toEqual( [4] )
+    })
+
     it('should not notify after a unregister', function(){
 
         const B = ( action ) => action.payload.value
