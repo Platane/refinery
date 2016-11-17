@@ -3,8 +3,15 @@ box: node:6
 build:
     steps:
         - script:
-            name: npm install
-            code: env NODE_ENV=dev npm install --quiet && npm list --depth 0  --quiet
+            name: install dependencies with yarn
+            code: |
+                npm install -g yarn --quiet --depth 0
+                export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
+                HOME=$YARN_CACHE yarn --pure-lockfile
+
+        - script:
+            name: print outdated package
+            code: npm outdated --quiet
 
         - script:
             name: build
