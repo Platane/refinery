@@ -1,25 +1,5 @@
 
-import call             from '../dispatcher/call'
-
-const compute = ( fragment_by_name, name, action, state, previousState, outdated ) => {
-
-    const fragment = fragment_by_name[ name ]
-
-    if ( !outdated[ name ] )
-        return
-
-    let outdatedDependency = null
-    while( outdatedDependency = fragment.dependencies.find( name => outdated[ name ] ) )
-        compute( fragment_by_name, outdatedDependency, action, state, previousState, outdated )
-
-    const oldValue  = state[ name ]
-    const newValue  = call( fragment, action, state, previousState )
-
-    if ( fragment.equal ? !fragment.equal( newValue, oldValue ) : newValue != oldValue )
-        state[name] = newValue
-
-    outdated[ name ] = false
-}
+import update             from './update'
 
 
 const createGetValue = ( fragment_by_name, state, hooks ) => {
@@ -40,7 +20,7 @@ const createGetValue = ( fragment_by_name, state, hooks ) => {
 
             state.outdated = { ...state.outdated }
 
-            compute( fragment_by_name, name, action, newState, {}, state.outdated )
+            update( fragment_by_name, name, newState, state.outdated )
 
             state.previous = state.current
             state.current  = newState

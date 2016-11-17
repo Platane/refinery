@@ -148,6 +148,30 @@ describe('lazy evaluation', function(){
         expect( store.getValue(D) ).toBe( '10bcd' )
     })
 
+    it('should update fragment when value is required for listener and fragment did not update at currnet dispatch', function(){
+
+        const A        = ( action ) =>  action.payload.value
+        A.initValue    = 0
+        A.actions      = ['incr']
+
+        const B        = a => a+'b'
+        B.dependencies = [ A ]
+        B.stateless    = true
+
+        const C        = () => 3
+        C.stateless    = true
+
+        const store = create({ A,B,C })
+
+        // this will flag all the chain as non-outdated
+        store.register( B, C, ( B, C ) =>
+            expect( C ).toBe( 3 )
+        )
+
+        // this should reset the whole chain as outdated
+        store.dispatch({ type:'incr', payload:{ value: 10 } })
+    })
+
 
 
 })

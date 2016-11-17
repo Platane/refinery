@@ -1,5 +1,6 @@
 
 import call             from './call'
+import update           from '../getValue/update'
 import computeNewState  from './computeNewState'
 
 
@@ -58,6 +59,11 @@ const createDispatcher = ( fragment_by_name, state, hooks ) => {
             .filter( (a,i,arr) => arr.indexOf( a ) == i )
 
         listeners.forEach( listener => {
+
+            // ensure that envery fragment is up to date
+            listener.fragments.forEach( name => update( fragment_by_name, name, state.current, state.outdated ) )
+
+
             const args = listener.fragments.map( name => state.current[ name ] )
             try{
                 listener.callback.apply( null, args )
