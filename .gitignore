@@ -6,3 +6,4 @@ Thumbs.db
 dist
 lib
 _book
+coverage

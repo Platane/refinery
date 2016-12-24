@@ -1,59 +1,98 @@
-import { parseFragmentTree }    from './parse'
-import { sort }                 from './sort'
-import { initState }            from './initState'
-import { initCold }             from './initCold'
-import createDispatcher         from './dispatcher/create'
-import createRegister           from './listener/create'
-import createValuerGetter       from './getValue/create'
+import parse    from './parse'
 
-const createStore = ( fragmentTree ) => {
+const call      = ( previousState, newState, action, { name, reduce, dependencies, source, stateless } ) => {
 
-    // extract all the fragment
-    let fragment_list           = parseFragmentTree( fragmentTree )
-    const fragment_by_name      = {}
-    fragment_list.forEach( fragment => fragment_by_name[fragment.name] = fragment )
+    const args = []
 
-    // extract the dependencies
-    fragment_list.forEach( fragment => fragment.extractDependencies( fragment_by_name, fragmentTree ) )
+    if ( source )
+        args.push( action )
 
-    // flag as cold the fragment that are
-    initCold( fragment_by_name )
+    args.push(
+        ...dependencies.map( ({ name }) => newState[ name ] )
+    )
 
-    // sort the fragments
-    // ( set the index attributes )
-    sort( fragment_by_name )
+    if ( !stateless )
+        args.push(
+            previousState[ name ],
+            ...dependencies.map( ({ name }) => previousState[ name ] )
+        )
 
-    // init state
-    const state = {
+    return reduce( ...args )
+}
 
-        // old the current value for all the fragment, by name
-        current         : null,
+/**
+ *
+ * merge a in b,
+ *   keep a sorted ( by the attribute "y")
+ *
+ */
+const sortedMerge = ( a, b ) => {
 
-        // old the previous value for all the fragment, by name
-        previous        : null,
+    let ia = 0
+    let ib = 0
+    while( ib < b.length ){
 
-        // old which fragment is "outdated" = not updated because of lazy computation, whereas it should have been in the last loop
-        outdated        : {},
-    }
-    state.current       = initState( fragment_by_name )
-    state.previous      = { ...state.current }
-    state.outdated      = {}
-    fragment_list
-        .filter( fragment => fragment.cold )
-        .forEach( fragment => state.outdated[ fragment.name ] = true )
+        if( ia >= a.length )
+            a.push( b[ib ++ ] )
 
-    // list of callback to call after each new state computation ( for debugging purpose )
-    const hooks = []
+        else {
+            if ( a[ia].y > b[ib].y )
+                a.splice( ia, 0, b[ib ++] )
 
-    return {
-        ...createDispatcher( fragment_by_name, state, hooks ),
-        ...createRegister( fragment_by_name, state, hooks ),
-        ...createValuerGetter( fragment_by_name, state, hooks ),
-        getState        : () => state.current,
-        _registerHook   : callback => hooks.push( callback ),
-        _getFragments   : () => fragment_list,
+            else if ( a[ia].y == b[ib].y )
+                ib++
+        }
+
+        ia++
     }
 }
 
+const eliminateDuplicate = ( a, b ) =>
+    a.filter( u => !b.some( v => u.name == v.name ) )
 
-module.exports = { create : createStore }
+const create    = reducerTree => {
+
+    const reducerList   = parse( reducerTree )
+
+    const sources       = reducerList.filter( x => x.source )
+
+
+    const reduce        = ( previousState, action ) => {
+
+        const toUpdate  = sources.slice()
+        const newState  = { ...previousState }
+
+        while ( toUpdate.length ) {
+
+            const reducer = toUpdate.shift()
+
+            const newValue = call( previousState, newState, action, reducer )
+
+            if ( newValue == previousState[ reducer.name ] )
+                continue
+
+            newState[ reducer.name ] = newValue
+
+            sortedMerge( toUpdate, eliminateDuplicate( reducer.derivations, toUpdate ) )
+        }
+
+        return newState
+    }
+
+    const initAction   = { type:'@@init/refinery' }
+    const initState    = {}
+    reducerList.forEach( reducer =>
+
+        initState[ reducer.name ] = 'initValue' in reducer
+
+            ? reducer.initValue
+
+            : call( {}, initState, initAction, reducer )
+
+    )
+
+    return { reduce, initState }
+}
+
+module.exports = create
+

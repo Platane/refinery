@@ -1,7 +1,7 @@
 
-require('file?name=index.html!./index.html')
+import 'file?name=index.html!./index.html'
 
-import 'mocha/mocha.css'
+import 'style!css!mocha/mocha.css'
 
 
 // load mocha script as inline

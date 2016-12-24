@@ -1,91 +1,72 @@
+import sortDependencies 	   from './sort'
 
 
 
+const isReducer = o =>
+    ( 'function' == typeof o ) || o.reduce
 
-const parseFragmentDefinition = ( definition, path ) => {
+const parseReducer = o =>
+    ({
+        reduce      : o.reduce || o,
+        name        : null,
+        index       : null,
+        dependencies: [],
+        derivations : [],
+        source      : !!o.source,
+        stateless   : !!( o.stateless && !o.source ),
+        _ref        : o,
+    })
 
-    const name = path.join('.')
+//return an array of parsed reducer, with names corresponding to the path concatened
+const parseReducerTree = ( tree ) =>
+        isReducer( tree )
 
-    if ( definition.actions && definition.actions != 'all' && ( !Array.isArray( definition.actions ) || definition.actions.some( action => typeof action != 'string') ) ){
-        console.warn('definitions.action should be either \'all\' or a array containing actions type as string')
-        throw new  Error('unexpected fragment definition')
-    }
-    const actions    = Array.isArray( definition.actions ) ? definition.actions : []
-    const allActions = definition.allActions || definition.actions == 'all'
+            // leaf, parse the reducer
+            ? [ { ...parseReducer( tree ) } ]
 
-    if ( ( definition.stateless || definition.projector ) && ( actions.length || allActions )  ){
-        console.warn('a stateless fragment can not react to an action')
-        throw new  Error('unexpected fragment definition')
-    }
-    const stateless = !!definition.stateless
-    const cold      = stateless
+            // not, iterate throught children, concat and return the results
+            : [].concat(
+                ...Object.keys( tree )
+                    .map( key =>
+                        parseReducerTree( tree[ key ] )
+                            .map( r =>
+                                ({
+                                    ...r,
+                                    name    : key + ( r.name ? '.'+r.name : '' ),
+                                })
+                            )
+                    )
+            )
 
-    const fragment = {
-        update          : definition.update || definition,
-        equal           : definition.equal,
-        nexts           : [],
-        dependencies    : [],
-        listeners       : [],
-        cold            : null,
-        name,
-        stateless,
-        definition,
-        allActions,
-        actions,
 
-        index               : null,
-        extractDependencies : null,
-    }
+// modify the array in place,
+// add dependencies and derivations
+const parseDependencies = ( reducerList ) =>
+    reducerList.forEach( reducer =>
 
-    if ( 'initValue' in definition )
-        fragment.initValue = definition.initValue
+        ( reducer._ref.dependencies || [] )
+            .forEach( (d,i) => {
 
-    fragment.extractDependencies = ( fragment_by_name, fragmentTree ) =>
+                // r can be either the name or the reference
+                const dependency = reducerList.find( u => u.name == d || u._ref == d )
 
-        ( ( typeof definition.dependencies == 'function' && definition.dependencies( fragmentTree ) ) || definition.dependencies || [] )
-            .map( nameOrDefinition =>  {
+                if ( !dependency )
+                    throw new Error(`the reducer ${ reducer.name } declare an undefined dependency at position ${i}`)
 
-                let dependencyName
-
-                if ( typeof nameOrDefinition == 'string' ) {
-
-                    if ( !fragment_by_name[ nameOrDefinition ] ){
-                        console.warn('invalid fragment definition, '+nameOrDefinition+' does not exist')
-                        throw new  Error('unexpected fragment definition')
-                    }
-
-                    dependencyName = nameOrDefinition
-
-                } else {
-
-                    dependencyName = Object.keys( fragment_by_name ).find( name => fragment_by_name[name].definition == nameOrDefinition )
-
-                    if ( !dependencyName ){
-                        console.warn('invalid fragment definition, dependency is not in the fragment tree')
-                        throw new  Error('unexpected fragment definition')
-                    }
-                }
-
-                fragment_by_name[ name ].dependencies.push( dependencyName )
-                fragment_by_name[ dependencyName ].nexts.push( name )
-
+                reducer.dependencies.push( dependency )
+                dependency.derivations.push( reducer )
             })
+    )
 
 
+module.exports  = (reducerTree = {}) => {
 
-    return fragment
+    const reducerList = parseReducerTree( reducerTree )
+
+    parseDependencies( reducerList )
+
+    sortDependencies( reducerList )
+
+    return reducerList
 }
 
-
-const isFragmentDefinition = node =>
-    typeof node == 'function' || ( node.update && typeof node.update == 'function' )
-
-
-const parseFragmentTree = ( node, path = [] ) =>
-    isFragmentDefinition( node )
-        ? [ parseFragmentDefinition( node, path ) ]
-        : [].concat(
-            ...Object.keys( node ).map( key => parseFragmentTree( node[key], [ ...path, key ] ) )
-        )
-
-module.exports = { parseFragmentTree }
