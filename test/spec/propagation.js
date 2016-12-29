@@ -6,81 +6,72 @@ describe('propagation', () => {
 
     it('should propage update to derivation, and derivation only', () => {
 
-        let updated = []
-        const A = {
-            reduce      : ( action, a ) => {
+        const list = []
+        const spy = ( label, fn ) =>
+            ( ...args ) => {
+                list.push( label )
+                return fn( ...args )
+            }
+
+        const A = spy( 'A',
+            ( action, a ) => {
                 switch( action.type ){
                     case 'blue'     : return 4
                     case 'yellow'   : return 8
                     default         : return a || 0
                 }
-            },
-            source       : true,
-        }
-        const B = {
-            reduce      : a => {
-                updated.push('B')
-                return a+'b'
-            },
-            dependencies: [ 'A' ],
-        }
-        const C = {
-            reduce      : (b,d) => {
-                updated.push('C')
-                return b+'-'+d
-            },
-            dependencies: [ 'B', 'D' ],
-        }
-        const D = {
-            reduce      : (a,b,w) => {
-                updated.push('D')
-                return a+'d'+w
-            },
-            dependencies: [ 'A', 'B', 'W' ],
-        }
+            }
+        )
+        A.source = true
 
-        const W = {
-            reduce      : ( action, w ) => {
-                switch( action.type ){
-                    case 'purple' : return 4
-                    default       : return w || 0
-                }
-            },
-            source       : true,
-        }
+        const B = spy( 'B', a => a+'b' )
+        B.dependencies = [ 'A' ]
 
-        const { reduce, initState } = createReducer({ A, W, B, C, D })
+        const C = spy( 'C', (b,d) => b+'-'+d )
+        C.dependencies = [ 'B', 'D' ]
+
+        const D = spy( 'D', (a,b,w) => a+'d'+w )
+        D.dependencies = [ 'A', 'B', 'W' ]
+
+        const W = ( action, w ) => {
+            switch( action.type ){
+                case 'purple' : return 4
+                default       : return w || 2
+            }
+        }
+        W.source = true
+
+        const { reduce, initState } = createReducer({ A, D, C, W, B })
         const store = createStore( reduce, initState )
 
         expect( store.getState() )
             .toContain({
                 'A'     : 0,
-                'W'     : 0,
+                'W'     : 2,
                 'B'     : '0b',
-                'D'     : '0d0',
-                'C'     : '0b-0d0',
+                'D'     : '0d2',
+                'C'     : '0b-0d2',
             })
 
 
-
-        updated.length=0
+        list.length=0
         store.dispatch({ type:'yellow'})
 
         expect( store.getState() )
             .toContain({
                 'A'     : 8,
-                'W'     : 0,
+                'W'     : 2,
                 'B'     : '8b',
-                'D'     : '8d0',
-                'C'     : '8b-8d0',
+                'D'     : '8d2',
+                'C'     : '8b-8d2',
             })
 
-        expect( updated ).toEqual([ 'B', 'D', 'C' ])
+        expect( list ).toEqual([ 'A', 'B', 'D', 'C' ])
 
 
 
 
-        updated.length=0
+        list.length=0
         store.dispatch({ type:'purple'})
 
         expect( store.getState() )
@@ -92,7 +83,7 @@ describe('propagation', () => {
                 'C'     : '8b-8d4',
             })
 
-        expect( updated ).toEqual([ 'D', 'C' ])
+        expect( list ).toEqual([ 'A', 'D', 'C' ])
 
     })
 

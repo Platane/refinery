@@ -38,7 +38,13 @@ const sort = reducerList => {
         y ++
     }
 
+    // alter the list
     reducerList.sort( (a,b) => a.y > b.y ? 1 : -1 )
+
+    // and the derivations list for each reducer
+    reducerList.forEach( reducer => {
+        reducer.derivations.sort( (a,b) => a.y > b.y ? 1 : -1 )
+    })
 }
 
 module.exports = sort
