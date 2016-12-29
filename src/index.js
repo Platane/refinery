@@ -52,8 +52,10 @@ const eliminateDuplicate = ( a, b ) =>
 
 const create    = reducerTree => {
 
+    // the sorted list of reducers
     const reducerList   = parse( reducerTree )
 
+    // reducers which react to actions
     const sources       = reducerList.filter( x => x.source )
 
 
@@ -68,27 +70,26 @@ const create    = reducerTree => {
 
             const newValue = call( previousState, newState, action, reducer )
 
-            if ( newValue == previousState[ reducer.name ] )
+            if ( newValue === previousState[ reducer.name ] )
                 continue
 
             newState[ reducer.name ] = newValue
 
+            // propage the update to derivations
+            // be careful to conserver the reducer order
             sortedMerge( toUpdate, eliminateDuplicate( reducer.derivations, toUpdate ) )
         }
 
         return newState
     }
 
-    const initAction   = { type:'@@init/refinery' }
+    // notice that redux does kind of the same init job
+    // expect that the init will not propage if a dependencies does not changed at init ( = stays null or undefined )
+    // this loop will call the reducer no matter if the dependencies change or not to ensure every value is inited
+    const initAction   = { type:'@@refinery/INIT' }
     const initState    = {}
     reducerList.forEach( reducer =>
-
-        initState[ reducer.name ] = 'initValue' in reducer
-
-            ? reducer.initValue
-
-            : call( {}, initState, initAction, reducer )
-
+        initState[ reducer.name ] = call( {}, initState, initAction, reducer )
     )
 
     return { reduce, initState }
