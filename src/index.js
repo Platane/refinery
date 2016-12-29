@@ -35,12 +35,9 @@ const sortedMerge = ( a, b ) => {
         if( ia >= a.length )
             a.push( b[ib ++ ] )
 
-        else {
-            if ( a[ia].y > b[ib].y )
-                a.splice( ia, 0, b[ib ++] )
-
-            else if ( a[ia].y == b[ib].y )
-                ib++
+        else if ( a[ia].y >= b[ib].y ) {
+            a.splice( ia, 0, b[ib] )
+            ib ++
         }
 
         ia++
