@@ -67,7 +67,9 @@ const state = {
 
 We can merge the two reducers, but we don't want to, they are complex enought left alone.
 
-We could probably go with stacking a new layer of reducer, `reducerCount`
+We could probably go with composing reducer.
+
+The state pass throught the first reducer, then to another one `reducerCount`
 
 ```javascript
 const reducer = compose( combineReducers( reducerA, reducerB ), reducerCount )
@@ -99,5 +101,3 @@ sum.dependencies = [ listA, listB ]
 ```
 
 Refinery handles for you to call the update function when needed.
-
-> And other cool stuffs comes for free ! ( specific change listener, lazy evaluation ... )
