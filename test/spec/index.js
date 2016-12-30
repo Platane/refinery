@@ -1,8 +1,4 @@
-
-require('./api')
-require('./create')
-require('./dispatch')
-require('./listener')
-require('./lazy')
-require('./debugMethods')
-require('./warning')
+import './parsing'
+import './initState'
+import './propagation'
+import './sort'

@@ -1,44 +1,58 @@
 
-/**
- *
- * asssuming fragment_by_name contains named object with a filed 'dependencies' which contains dependencies as name
- *
- * set the index attribute on the fragments
- *
- */
-const sort = ( fragment_by_name ) => {
+const filterInPlace = ( arr, test ) => {
+    for ( let i=arr.length; i--; )
+        if ( !test( arr[i] ) )
+            arr.splice( i, 1 )
+    return arr
+}
+
+// attach the attribute index on each reducer,
+// which is its index when the reducer list is sorted by dependency order
+// remark that this order may not be unique
+const sort = reducerList => {
 
     const graph = {}
-    Object.keys( fragment_by_name )
-        .forEach( name => graph[name] = fragment_by_name[ name ].dependencies.slice() )
+    reducerList
+        .forEach( reducer => graph[ reducer.name ] = reducer.dependencies.slice() )
 
-    let list = Object.keys( graph )
+    const list = reducerList.slice()
 
-    let index       = 0
-    const stepSize  = 1000
+    let y      = 0
+    let index  = 0
 
     while( list.length ){
 
-        // get all the fragment without dependencies in the list on remaining fragments
-        const sources = list.filter( name => graph[ name ].length == 0 )
+        // get all the reducer without dependencies in the list on remaining fragments
+        const sources = list.filter( ({ name }) => graph[ name ].length == 0 )
 
         if ( sources.length == 0 )
             throw new Error('cylclical dependencies')
 
-        // attribues index to the fragment in this batch arbitrarily
-        sources.forEach( name => fragment_by_name[ name ].index = index = index+1 )
+        // attribues y to the fragment in this batch arbitrarily
+        sources.forEach( reducer => {
+            reducer.y       = y
+            reducer.index   = index
+            index ++
+        })
 
         // remove the sources from the remaining fragments
-        list = list.filter( name => !sources.some( n => name == n ) )
+        filterInPlace( list, a => !sources.some( b => a.name == b.name ) )
 
         // remove the soruces from the remaining fragments dependencies
-        list.forEach( name =>
-            graph[ name ] = graph[ name ].filter( dep_name => !sources.some( source_name => source_name == dep_name ) )
+        list.forEach( ({ name }) =>
+            filterInPlace( graph[ name ], a => !sources.some( b => a.name == b.name ) )
         )
 
-        // just to emphaze the number of steps max
-        index += 1000
+        y ++
     }
+
+    // alter the list
+    reducerList.sort( (a,b) => a.index > b.index ? 1 : -1 )
+
+    // and the derivations list for each reducer
+    reducerList.forEach( reducer => {
+        reducer.derivations.sort( (a,b) => a.index > b.index ? 1 : -1 )
+    })
 }
 
-module.exports = { sort }
+module.exports = sort
