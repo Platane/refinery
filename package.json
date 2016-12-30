@@ -1,7 +1,7 @@
 {
     "name"        : "refinery-js",
     "version"     : "0.6.0",
-    "description" : "Flux graph based implementation.",
+    "description" : "reactive Redux reducer",
     "repository"  : "https://github.com/platane/refinery",
 
     "files": [
@@ -27,7 +27,7 @@
         "file-loader"               : "~0.9.0",
         "style-loader"              : "~0.13.0",
         "css-loader"                : "~0.26.1",
-        "raw-loader"                : "*",
+        "raw-loader"                : "~0.5.1",
         "babel-loader"              : "~6.2.5",
         "babel-register"            : "~6.18.0",
         "babel-core"                : "~6.21.0",
