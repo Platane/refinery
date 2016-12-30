@@ -1,32 +1,40 @@
 # refinery
 
-
-[![build status](https://img.shields.io/travis/Platane/refinery.svg?style=flat-square)](https://travis-ci.org/Platane/refinery)
+[![wercker status](https://app.wercker.com/status/3a608cdb76a067bfc05325268a54401d/s/master "wercker status")](https://app.wercker.com/project/byKey/3a608cdb76a067bfc05325268a54401d)
 [![dependency status](https://img.shields.io/david/Platane/refinery.svg?style=flat-square)](https://david-dm.org/platane/refinery)
 [![code coverage](https://img.shields.io/coveralls/Platane/refinery.svg?style=flat-square)](https://coveralls.io/repos/109857)
 [![npm version](https://img.shields.io/npm/v/refinery-js.svg?style=flat-square)](https://www.npmjs.com/package/refinery-js)
 
-Flux graph based implementation
+Reactive Redux reducer
 
+Let you build your application state as small reducer with dependency relations.
 
 # usage
 
 
 ```javascript
 
-// declare store fragments
+// fragment the state, declare a reducer for each
 
 // this fragment is updated when an action is dispatched
-const A = ( action, x ) =>
-    x ++
-A.actions = [ 'A:increment' ]
-A.initValue = 0
+const A = ( action, a = 0 ) => {
+    if ( 'A:increment' == action.type )
+        return a + 1
+    
+    else
+        return a
+}
+A.source    = true
 
 // this one too
-const B = ( action, x ) =>
-    x ++
-B.actions = [ 'B:increment' ]
-B.initValue = 0
+const B = ( action, b = 0 ) => {
+    if ( 'B:increment' == action.type )
+        return b + 1
+    
+    else
+        return b
+}
+B.source    = true
 
 // this fragment depends on others, it is updated when the dependencies change
 const sum => ( a, b ) =>
@@ -35,16 +43,25 @@ sum.dependencies = [ A, B ]
 ```
 
 ```javascript
-import create            from 'refinery-js'
 
-const {dispatch, getValue, register} = create( { A, B, sum } )
+// usage with redux
 
-// dispatch the action
-dispatch({type:'A:increment'})
+import createReducer     from 'refinery-js'
+import { createStore }   from 'redux'
 
-// access the value
-getValue( sum )
+// create the reducer from the fragments
+const { reduce, initState } = createReducer( { A, B, sum } )
 
-// get notified when the fragment value change
-register( sum, ( x ) => console.log(`sum value is now ${x}`) )
+// create redux store
+const store = createStore( reduce, initState )
+
+store.dispatch({type:'A:increment'})
+
+store.getState()
+// {
+//      A   : 1
+//      B   : 0
+//      sum : 1
+// }
+
 ```
