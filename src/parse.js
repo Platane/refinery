@@ -10,6 +10,7 @@ const parseReducer = o =>
         reduce      : o.reduce || o,
         name        : null,
         index       : null,
+        y           : null,
         dependencies: [],
         derivations : [],
         source      : !!o.source,

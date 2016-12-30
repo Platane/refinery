@@ -23,29 +23,49 @@ const call      = ( previousState, newState, action, { name, reduce, dependencie
 /**
  *
  * merge a in b,
- *   keep a sorted ( by the attribute "y")
+ *   keep a sorted ( by the attribute "index")
  *
  */
 const sortedMerge = ( a, b ) => {
+
+    // traverse simultaneously a and b
 
     let ia = 0
     let ib = 0
     while( ib < b.length ){
 
-        if( ia >= a.length )
-            a.push( b[ib ++ ] )
+        if( ia >= a.length ){
+            // we are at the end of a,
+            // b still contains element
+            // push then to a
+            a.push( b[ ib ] )
 
-        else if ( a[ia].y >= b[ib].y ) {
-            a.splice( ia, 0, b[ib] )
+            // continue to the next element of b
             ib ++
-        }
 
-        ia++
+            // as we add an element on a, put the cursor on it
+            ia ++
+
+        } else if ( a[ia].index > b[ib].index ) {
+            // the next element of b should be inserted before the next element of a
+            a.splice( ia, 0, b[ib] )
+
+            // continue to the next element of b
+            ib ++
+
+            // as we add an element on a, put the cursor on it
+            ia ++
+
+        } else if ( a[ia].index == b[ib].index ) {
+            // as id are unique,
+            // the item is already in the a list
+            // ignore it
+            ib ++
+
+        } else
+            ia ++
     }
 }
-
-const eliminateDuplicate = ( a, b ) =>
-    a.filter( u => !b.some( v => u.name == v.name ) )
 
 const create    = reducerTree => {
 
@@ -74,7 +94,7 @@ const create    = reducerTree => {
 
             // propage the update to derivations
             // be careful to conserver the reducer order
-            sortedMerge( toUpdate, eliminateDuplicate( reducer.derivations, toUpdate ) )
+            sortedMerge( toUpdate, reducer.derivations )
         }
 
         return newState

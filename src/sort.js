@@ -6,6 +6,9 @@ const filterInPlace = ( arr, test ) => {
     return arr
 }
 
+// attach the attribute index on each reducer,
+// which is its index when the reducer list is sorted by dependency order
+// remark that this order may not be unique
 const sort = reducerList => {
 
     const graph = {}
@@ -15,6 +18,7 @@ const sort = reducerList => {
     const list = reducerList.slice()
 
     let y      = 0
+    let index  = 0
 
     while( list.length ){
 
@@ -25,7 +29,11 @@ const sort = reducerList => {
             throw new Error('cylclical dependencies')
 
         // attribues y to the fragment in this batch arbitrarily
-        sources.forEach( reducer => reducer.y = y )
+        sources.forEach( reducer => {
+            reducer.y       = y
+            reducer.index   = index
+            index ++
+        })
 
         // remove the sources from the remaining fragments
         filterInPlace( list, a => !sources.some( b => a.name == b.name ) )
@@ -39,11 +47,11 @@ const sort = reducerList => {
     }
 
     // alter the list
-    reducerList.sort( (a,b) => a.y > b.y ? 1 : -1 )
+    reducerList.sort( (a,b) => a.index > b.index ? 1 : -1 )
 
     // and the derivations list for each reducer
     reducerList.forEach( reducer => {
-        reducer.derivations.sort( (a,b) => a.y > b.y ? 1 : -1 )
+        reducer.derivations.sort( (a,b) => a.index > b.index ? 1 : -1 )
     })
 }
 
