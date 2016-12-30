@@ -30,8 +30,11 @@ publish-npm:
     steps:
 
         - script:
-            name: prepublish
-            code: npm run prepublish
+            name: build
+            code: |
+                npm run build
+                npm run bundle
+                npm run bundle:min
 
         - turistforeningen/npm-publish:
             # need NPM_TOKEN env var set
