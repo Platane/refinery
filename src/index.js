@@ -109,7 +109,14 @@ const create    = reducerTree => {
         initState[ reducer.name ] = call( {}, initState, initAction, reducer )
     )
 
-    return { reduce, initState }
+    // alphanumerical sort the fragment name
+    // this is helpful for reading the state in redux devTool
+    const sortedInitState = {}
+    Object.keys(initState)
+        .sort( (a, b) => a > b ? 1 : -1 )
+        .forEach( key => sortedInitState[key] = initState[key] )
+
+    return { reduce, initState: sortedInitState }
 }
 
 module.exports = create
