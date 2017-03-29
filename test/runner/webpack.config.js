@@ -15,10 +15,10 @@ module.exports = {
 
     module: {
 
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: 'babel',
+                use: 'babel-loader',
             },
         ],
     },

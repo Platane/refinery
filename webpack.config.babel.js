@@ -32,11 +32,11 @@ module.exports = {
 
     module: {
 
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /(node_modules|\.tmp)/,
-                loader: 'babel',
+                use: 'babel-loader',
             },
         ]
     },

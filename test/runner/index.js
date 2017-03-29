@@ -1,12 +1,12 @@
 
-import 'file?name=index.html!./index.html'
+import 'file-loader?name=index.html!./index.html'
 
-import 'style!css!mocha/mocha.css'
+import 'style-loader!css-loader!mocha/mocha.css'
 
 
 // load mocha script as inline
 const script_mocha = document.createElement('script')
-script_mocha.innerHTML = require('raw!mocha/mocha.js')
+script_mocha.innerHTML = require('raw-loader!mocha/mocha.js')
 document.body.appendChild( script_mocha )
 
 
