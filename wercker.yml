@@ -5,7 +5,6 @@ build:
         - script:
             name: install dependencies with yarn
             code: |
-                npm install -g yarn --quiet --depth 0
                 export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
                 HOME=$YARN_CACHE yarn --pure-lockfile
 
