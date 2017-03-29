@@ -1,0 +1,319 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Motivation · Refinery</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="gist.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="gist.html">
+            
+                <a href="gist.html">
+            
+                    
+                    Gist
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3" data-path="motivation.html">
+            
+                <a href="motivation.html">
+            
+                    
+                    Motivation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Motivation</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="motivation">Motivation</h1>
+<p>I created refinery trying to solve problems I encounter the best way possible. Doing so I was inspired by other libraries and took what I found clever, filling the gap where I felt something was missing.</p>
+<h2 id="inspiration">Inspiration</h2>
+<p>Refinery follows the same principle as <strong>Redux</strong>. Which is : whenever something happen a serializable action is dispatched and the new app state is computed with a reducer function. <code>newState = reducer( action, oldState )</code>.</p>
+<blockquote>
+<p>In fact, you can see refinery as a convenient way to write your reducer to pass to the redux store creator. With smarter listeners.</p>
+</blockquote>
+<p>Redux encourage you to break your application state into isolated reducer, which are responsible for only a small piece of the state.</p>
+<p>Which is great, but I always find myself having to enlarge the scope of reducer when I have a value that depends on many parts of the state.</p>
+<p>Let me explain why I came to develop refinery with an example.</p>
+<h2 id="example">Example</h2>
+<p>Let&apos;s take an example,</p>
+<p>Reducers are composed like this :</p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    listA <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">// updated by reducerA</span>
+    listB <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">// updated by reducerB</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Let says <code>ReducerA</code> handles many complex thing, with many actions.
+Same thing for <code>ReducerB</code>.</p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> reducerA <span class="token operator">=</span> <span class="token punctuation">(</span> action<span class="token punctuation">,</span> previousListA <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">switch</span><span class="token punctuation">(</span> action<span class="token punctuation">.</span>type <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//</span>
+        <span class="token comment" spellcheck="true">// very large switch with complex stuff</span>
+        <span class="token comment" spellcheck="true">// ...</span>
+
+<span class="token keyword">const</span> reducerB <span class="token operator">=</span> <span class="token punctuation">(</span> action<span class="token punctuation">,</span> previousListB <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">switch</span><span class="token punctuation">(</span> action<span class="token punctuation">.</span>type <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//</span>
+        <span class="token comment" spellcheck="true">// even larger switch, with unrelated to listA, yet complex stuff</span>
+        <span class="token comment" spellcheck="true">// ...</span>
+</code></pre>
+<p>This is a good use of <code>combineReducers</code></p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> reducer <span class="token operator">=</span> <span class="token function">combineReducers</span><span class="token punctuation">(</span> reducerA<span class="token punctuation">,</span> reducerB <span class="token punctuation">)</span>
+</code></pre>
+<h2 id="issue">Issue</h2>
+<p>Now let say we need to maintain the sum of all element in listA + listB, and have it in the state.</p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    listA <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    listB <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    sum   <span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>We can merge the two reducers, but we don&apos;t want to, they are complex enought left alone.</p>
+<p>We could probably go with composing reducer.</p>
+<p>The state pass throught the first reducer, then to another one <code>reducerCount</code></p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> reducer <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> <span class="token function">combineReducers</span><span class="token punctuation">(</span> reducerA<span class="token punctuation">,</span> reducerB <span class="token punctuation">)</span><span class="token punctuation">,</span> reducerCount <span class="token punctuation">)</span>
+</code></pre>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> reducerCount <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">{</span> listA<span class="token punctuation">,</span> listB <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">(</span><span class="token punctuation">{</span>
+        listA<span class="token punctuation">,</span>
+        listB<span class="token punctuation">,</span>
+        sum <span class="token punctuation">:</span> listA<span class="token punctuation">.</span>length <span class="token operator">+</span> listB<span class="token punctuation">.</span>length
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is acceptable.
+However as the application grows it becomes painful to determine by hand which reducer should be called first.</p>
+<h2 id="solution">Solution</h2>
+<p>This is what refinery do.</p>
+<p>You describe the application with dependency relation between piece of state.</p>
+<pre class="language-"><code class="lang-javascript"><span class="token keyword">const</span> sum <span class="token operator">=</span> <span class="token punctuation">(</span> listA<span class="token punctuation">,</span> listB <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span>
+    listA<span class="token punctuation">.</span>length <span class="token operator">+</span> listB<span class="token punctuation">.</span>length
+
+sum<span class="token punctuation">.</span>dependencies <span class="token operator">=</span> <span class="token punctuation">[</span> listA<span class="token punctuation">,</span> listB <span class="token punctuation">]</span>
+</code></pre>
+<p>Refinery handles for you to call the update function when needed.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="gist.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Gist">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Motivation","level":"1.3","depth":1,"previous":{"title":"Gist","level":"1.2","depth":1,"path":"gist.md","ref":"gist.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-highlight","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/platane/refinery"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"version":"0.6.1"},"title":"Refinery","gitbook":">=3.0.0-pre.0"},"file":{"path":"motivation.md","mtime":"2017-03-29T17:33:09.476Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-03-29T17:34:17.951Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

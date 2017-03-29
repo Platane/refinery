@@ -1,0 +1,321 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Gist · Refinery</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="motivation.html" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="gist.html">
+            
+                <a href="gist.html">
+            
+                    
+                    Gist
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="motivation.html">
+            
+                <a href="motivation.html">
+            
+                    
+                    Motivation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Gist</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="gist">Gist</h1>
+<p>Let&apos;s build a refinery app example.</p>
+<pre class="language-"><code class="lang-javascript">
+<span class="token comment" spellcheck="true">// This fragment of state hold the pattern</span>
+<span class="token comment" spellcheck="true">// The value passed with the action &apos;setPattern&apos;</span>
+<span class="token keyword">const</span> pattern <span class="token operator">=</span> <span class="token punctuation">(</span> action<span class="token punctuation">,</span> previousPattern <span class="token operator">=</span> <span class="token string">&apos;&apos;</span> <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token string">&apos;setPattern&apos;</span> <span class="token operator">==</span> action<span class="token punctuation">.</span>type <span class="token punctuation">)</span>
+        <span class="token keyword">return</span> action<span class="token punctuation">.</span>payload<span class="token punctuation">.</span>pattern
+
+    <span class="token keyword">else</span>
+        <span class="token keyword">return</span> previousPattern
+
+<span class="token comment" spellcheck="true">// The line below describe the fact that the reducer should be called when an action is dispatched</span>
+pattern<span class="token punctuation">.</span>source <span class="token operator">=</span> <span class="token boolean">true</span>
+
+
+<span class="token comment" spellcheck="true">// This fragment have the same behavior, it store all the word passed with the action &apos;newWord&apos; in an array</span>
+<span class="token keyword">const</span> wordList <span class="token operator">=</span> <span class="token punctuation">(</span> action<span class="token punctuation">,</span> list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token string">&apos;newWord&apos;</span> <span class="token operator">==</span> action<span class="token punctuation">.</span>type <span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token punctuation">[</span> <span class="token operator">...</span>list<span class="token punctuation">,</span> action<span class="token punctuation">.</span>payload<span class="token punctuation">.</span>word <span class="token punctuation">]</span>
+
+    <span class="token keyword">else</span>
+        <span class="token keyword">return</span> list
+<span class="token punctuation">}</span>
+
+wordList<span class="token punctuation">.</span>source <span class="token operator">=</span> <span class="token boolean">true</span>
+
+
+<span class="token comment" spellcheck="true">// This fragment is derivated from others.</span>
+<span class="token comment" spellcheck="true">// The value will be computed from the values of other fragments.</span>
+<span class="token keyword">const</span> matchingWords <span class="token operator">=</span> <span class="token punctuation">(</span> wordList<span class="token punctuation">,</span> pattern <span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span>
+    matchingWords<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span> word <span class="token operator">=</span><span class="token operator">&gt;</span> word<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span> pattern <span class="token punctuation">)</span> <span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// The line below define the fragment dependencies</span>
+matchingWords<span class="token punctuation">.</span>dependencies <span class="token operator">=</span> <span class="token punctuation">[</span> wordList<span class="token punctuation">,</span> pattern <span class="token punctuation">]</span>
+
+
+<span class="token comment" spellcheck="true">// create the reducer from the fragments</span>
+
+<span class="token keyword">import</span> create           <span class="token keyword">from</span> <span class="token string">&apos;refinery-js&apos;</span>
+
+<span class="token keyword">const</span> <span class="token punctuation">{</span> reduce<span class="token punctuation">,</span> initState <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">create</span><span class="token punctuation">(</span> <span class="token punctuation">{</span> pattern<span class="token punctuation">,</span> wordList<span class="token punctuation">,</span> matchingWords <span class="token punctuation">}</span> <span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// the reduce function can be used with redux</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> createStore <span class="token punctuation">}</span>  <span class="token keyword">from</span> <span class="token string">&apos;redux&apos;</span>
+
+<span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span> reduce<span class="token punctuation">,</span> initState <span class="token punctuation">)</span>
+
+
+store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type <span class="token punctuation">:</span> <span class="token string">&apos;newWord&apos;</span><span class="token punctuation">,</span> payload <span class="token punctuation">:</span> <span class="token punctuation">{</span> word <span class="token punctuation">:</span> <span class="token string">&apos;dinosaure&apos;</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type <span class="token punctuation">:</span> <span class="token string">&apos;setPattern&apos;</span><span class="token punctuation">,</span> payload <span class="token punctuation">:</span> <span class="token punctuation">{</span> pattern <span class="token punctuation">:</span> <span class="token string">&apos;di&apos;</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">// {</span>
+<span class="token comment" spellcheck="true">//      pattern         : &apos;di&apos;</span>
+<span class="token comment" spellcheck="true">//      wordList        : [ &apos;dinosaure&apos; ]</span>
+<span class="token comment" spellcheck="true">//      matchingWords   : [ &apos;dinosaure&apos;]</span>
+<span class="token comment" spellcheck="true">// }</span>
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: Introduction">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="motivation.html" class="navigation navigation-next " aria-label="Next page: Motivation">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Gist","level":"1.2","depth":1,"next":{"title":"Motivation","level":"1.3","depth":1,"path":"motivation.md","ref":"./motivation.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-highlight","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/platane/refinery"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"version":"0.6.1"},"title":"Refinery","gitbook":">=3.0.0-pre.0"},"file":{"path":"gist.md","mtime":"2017-03-29T17:33:09.476Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-03-29T17:34:17.951Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
